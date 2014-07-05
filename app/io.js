@@ -25,22 +25,43 @@ module.exports = function(io) {
     });
 
     socket.on('sendMessage', function(data) {
-      User.findOne({ username : data.friend }, function(err, friend) {
-        for (var i = 0; i < friend.sockets.length; i++) {
-          io.to(friend.sockets[i]).emit('receiveMessage', {
-            from : socket.request.user.username,
-            time : data.time,
-            content : data.content
-          });
-        }
-      });
       var newMessage = new Message();
       newMessage.from = socket.request.user.username;
       newMessage.to = data.friend;
       newMessage.content = data.content;
       newMessage.time = data.time;
-      newMessage.save();
+      newMessage.save(function(err, msg, numAffected) {
+        User.findOne({ username : data.friend }, function(err, friend) {
+          for (var i = 0; i < friend.sockets.length; i++) {
+            io.to(friend.sockets[i]).emit('receiveMessage', {
+              from : socket.request.user.username,
+              time : data.time,
+              content : data.content
+            });
+          }
+        });
+      });
     });
+
+    // user has opened a chat window with data.friend, send 10 recent msgs
+    socket.on('requireRecentMessages', function(data) {
+      console.log('requireRecentMessages called');
+      var user = socket.request.user.username;
+      Message.find()
+        .or([
+          { from : user, to : data.friend },
+          { from : data.friend, to : user }
+        ])
+        .sort('-time') // sort by time, descending
+        .limit(10)
+        .find(function(err, messages) {
+        socket.emit('receiveRecentMessages', {
+          from : data.friend,
+          messages : messages
+        })
+      });
+    });
+
 	});
 }
 

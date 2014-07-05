@@ -15,5 +15,8 @@ npm-debug.log
 node_modules
 
 config/database.js
+config/secret.js
 
 node_modules
+
+.DS_Store

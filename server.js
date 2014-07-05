@@ -15,7 +15,7 @@ var bodyParser   = require('body-parser');
 var session      = require('express-session');
 
 var configDB = require('./config/database');
-var sessionSecret = 'ilovescotchscotchyscotchscotch';
+var sessionSecret = require('./config/secret').sessionSecret;
 var mongoStore = require('./config/mongoStore')(session, sessionSecret);
 
 // configuration ===============================================================

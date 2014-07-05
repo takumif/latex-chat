@@ -1,3 +1,6 @@
+*{
+	font: Arial, sans-serif;
+}
 .header {
   height : 100px;
 }
@@ -19,4 +22,45 @@
 .sidebar {
   width : 200px;
   float : right;
+}
+
+.navbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+
+	height: 30px;
+	width: 100%;
+
+	margin: auto;
+	padding: 5px 30px 10px 15px;
+
+	background: #DEDEDE;
+	font: 17px Arial, sans-serif;
+	text-align: right;
+
+	box-shadow: 0px 1px rgba(0,0,0,0.2)
+}
+
+#setIcon {
+	vertical-align: middle;
+	margin: 6px 15px;
+}
+
+ #logoutIcon {
+ 	vertical-align: middle;
+ 	margin: 2px 40px 0 0;
+ }
+
+#userName {
+	position: absolute;
+	margin-top: 10px;
+	right: 170px;
+	padding: 0 20px 0 0;
+}
+
+#title{
+	float: left;
+	margin-top: 4px;
+	font: 25px Arial, sans-serif;
 }
