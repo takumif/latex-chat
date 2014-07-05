@@ -1,0 +1,39 @@
+<!-- views/profile.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title>Node Authentication</title>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+	<style>
+		body 		{ padding-top:80px; word-wrap:break-word; }
+	</style>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.3.min.js">
+	</script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/js/chat.js"></script>
+</head>
+<body>
+<div class="container">
+
+	<div class="page-header text-center">
+		<h1><span class="fa fa-user"></span> <%= user.email %></h1>
+		<a href="/logout" class="btn btn-default btn-sm">Logout</a>
+	</div>
+
+	<div class="row">
+
+		<!-- LOCAL INFORMATION -->
+		<div class="col-sm-14">
+			<div class="well">
+				<div class="messages">
+				</div>
+				<input type="text" class="form-control" id="input" />
+			</div>
+		</div>
+
+	</div>
+
+</div>
+</body>
+</html>

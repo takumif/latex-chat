@@ -1,0 +1,22 @@
+.header {
+  height : 100px;
+}
+
+.container {
+  height : 100%;
+}
+
+.chats {
+  float : left;
+  height : 100%;
+}
+
+.chatWindow {
+  float : right;
+  height : 100%;
+}
+
+.sidebar {
+  width : 200px;
+  float : right;
+}
