@@ -1,6 +1,8 @@
-*{
-	font: Arial, sans-serif;
+body {
+	font-family: Arial, sans-serif;
+	word-wrap: break-word;
 }
+
 .header {
   height : 100px;
 }
@@ -12,18 +14,21 @@
 .chats {
   float : left;
   height : 100%;
+
+  padding: 5px 10px;
 }
 
 .chatWindow {
   float : right;
   height : 100%;
+
+  margin-top: 30px;
 }
 
-.sidebar {
-  width : 200px;
-  float : right;
-}
 
+/* ==============================================
+   ================ NAVBAR =====================
+*/
 .navbar {
 	position: fixed;
 	top: 0;
@@ -63,4 +68,58 @@
 	float: left;
 	margin-top: 4px;
 	font: 25px Arial, sans-serif;
+}
+
+/* ==============================================
+   ================ SIDEBAR =====================
+*/
+.sidebar {
+  position: fixed;
+  right:0;
+
+  width : 200px;
+  height: 100%;
+
+  margin-top: 30px;
+}
+.friendList {
+	padding: 0 24px 0 24px;
+
+	font: Arial, sans-serif;
+	background-color: yellow;
+}
+
+
+
+/* ==============================================
+   ================ CHATS =====================
+*/
+
+.chats {
+	left: 0;
+	margin-right: 200px;
+
+	float:right;
+
+}
+
+.chatWindow {
+	width: 300px;
+	height: 100%;
+
+	margin: 33px 20px 0 0;
+
+}
+
+.chatHeader {
+	height: 35px;
+	width: 300px;
+
+	text-align: left;
+	font-size: 20px;
+
+	background-color: #DEDEDE;
+} 
+
+.chatContent {
 }
