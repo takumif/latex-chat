@@ -186,6 +186,7 @@ body{
 .chatInput {
 	position: absolute;
 	bottom: 0;
-	margin-bottom: 20px
+	margin-bottom: 20px;
+	resize: none;
 
 }

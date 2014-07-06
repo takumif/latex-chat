@@ -163,7 +163,7 @@ function chatWindow(friend) {
     '">x</a></div>' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div>' +
     '<div class="chatInputDiv">' +
-    '<input type="text" class="chatInput" id="chatInput-' + friend +
+    '<textarea cols="39" rows="5" class="chatInput" id="chatInput-' + friend +
 		'" /></div></div>'
 	);
 }
