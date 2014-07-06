@@ -190,6 +190,9 @@ function formatTime(time) {
 		month = months[time.getMonth()],
 		minutes = time.getMinutes(),
 		hours = time.getHours();
+	if (minutes < 10) {
+			minutes= "0"+minutes;
+		}
 	return (month+ " " +day +", " + hours+":"+minutes);
 }
 

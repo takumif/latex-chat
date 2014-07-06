@@ -37,6 +37,7 @@ body{
 	padding: 5px 30px 10px 15px;
 
 	background: #DEDEDE;
+
 	font: 17px Arial, sans-serif;
 	text-align: right;
 
@@ -44,25 +45,29 @@ body{
 }
 
 #setIcon {
-	vertical-align: middle;
 	margin: 6px 15px;
+
+	vertical-align: middle;
 }
 
  #logoutIcon {
- 	vertical-align: middle;
  	margin: 2px 40px 0 0;
+
+ 	vertical-align: middle;
  }
 
 #userName {
 	position: absolute;
-	margin-top: 10px;
 	right: 170px;
+
+	margin-top: 10px;
 	padding: 0 20px 0 0;
 }
 
 #title{
-	float: left;
 	margin-top: 4px;
+
+	float: left;
 	font: 25px Arial, sans-serif;
 }
 
@@ -78,9 +83,8 @@ body{
 
   margin-top: 39px;
 
-  border-left: solid;
-  border-width: 1px;
-  border-color: #ccd0bd;
+  border-left: 1px solid #ccd0bd;
+
   box-shadow: -1px 0 5px 0 #ccc;
 }
 
@@ -102,8 +106,9 @@ body{
 	padding-top: 3px;
 
 	border-top: 1px solid #ccc;
-	display: block;
 	border-left: 3px solid #ccc;
+	
+	display: block;
 }
 
 .friendLi:hover {
@@ -145,7 +150,7 @@ body{
 
 .chats {
 	left: 0;
-	margin-right: 200px;
+	margin-right: 210px;
 	height: 100%;
 
 	float:right;
@@ -190,16 +195,22 @@ body{
 	}
 
 	.closeChatWindow {
-		float: right;
-		margin-right: 15px;
+		height: 23px;
+		width: 23px;
+		margin-top: 0;
+		margin-right: 4px;
+
+		float: right;;
 		font: 18px Arial, sans-serif;
 
 		text-decoration: none;
 		color: black;
-
-		vertical-align: middle;
+		text-align: center;
 	}
 
+	.closeChatWindow:hover, .closeChatWindow:active {
+		background-color: #CFCFCF;
+	}
 
 
 /* All Messages are here */
