@@ -1,10 +1,14 @@
+html {
+	height: 100%;
+}
+
 body{
 	position: fixed;
 	overflow-y: hidden;
-	width: 100%
-}
 
-body {
+	width: 100%;
+	height: 100%;
+
 	font-family: Arial, sans-serif;
 	word-wrap: break-word;
 }
@@ -111,12 +115,15 @@ body {
 
 .chatWindow {
 	width: 300px;
-	height: 100%;
+	height: 90%;
+
 
 	margin: 33px 20px 0 0;
 }
 
+/* Containg name + Close window */
 .chatHeader {
+
 	height: 35px;
 	width: 300px;
 
@@ -134,14 +141,20 @@ body {
 	-mox-box-sizing: border-box;
 } 
 
-.closeChatWindow {
-	float: right;
-	margin-right: 15px;
+	.closeChatWindow {
+		float: right;
+		margin-right: 15px;
 
-	vertical-align: middle;
-}
+		vertical-align: middle;
+	}
 
+
+
+/* All Messages are here */
 .chatContent {
+	height: 100%;
+	overflow: scroll;
+
 	padding-left: 15px;	
 	padding-right: 15px;
 
@@ -151,18 +164,28 @@ body {
 	-mox-box-sizing: border-box;
 }
 
-.chatMessageSender {
-	font: bold 17px Arial, sans-serif;
-	float: left;
-	margin-left: 0;
-}
+	.chatMessage {
+	}
 
-.chatMessageTime {
-	font: Helvetica, sans-serif;
-	font-size: 9px;
-	float: right;
-}
+	.chatMessageSender {
+		font: bold 17px Arial, sans-serif;
+		float: left;
+		margin-left: 0;
+	}
 
-.chatMessageContent {
-	clear: both;
+	.chatMessageTime {
+		font: Helvetica, sans-serif;
+		font-size: 9px;
+		float: right;
+	}
+
+	.chatMessageContent {
+		clear: both;
+	}
+
+.chatInput {
+	position: absolute;
+	bottom: 0;
+	margin-bottom: 20px
+
 }
