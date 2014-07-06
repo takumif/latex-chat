@@ -13,14 +13,18 @@ $(function() {
 			friends = data.friends;
 			
 			for (var i = 0; i < friends.length; i++) {
-				var online = (onlineFriends.indexOf(friends[i].username) > -1) ? true : false;
-				$('.friendListUl').append(friendListItem(friends[i], online));
+				if (onlineFriends.indexOf(friends[i].username) > -1) {
+					$('.friendListUl').prepend(friendListItem(friends[i], true));
+				}else {
+					$('.friendListUl').append(friendListItem(friends[i], false));
+				}
+				
 			}
 
 			$('.friendLi').click(function() { // open chat window with the friend
 				var friend = $(this).attr('id').slice(9);
 				if (chattingWith.indexOf(friend) == -1) { // if not already chatting
-					openChatWindow(friend, socket, chattingWith);
+					openChatWindow(friend, socket, chattingWith, onlineFriends);
 				}
 			});
 		}
@@ -30,7 +34,7 @@ $(function() {
 		if (chattingWith.indexOf(data.from) > -1) { // chat window already open
 			$('#chatContent-' + data.from).append(chatMessage(data.from, data.time, data.content));
 		} else { // chat window not open, so open it
-			openChatWindow(data.from, socket, chattingWith);
+			openChatWindow(data.from, socket, chattingWith, onlineFriends);
 		}
 		highlightChatWindow(data.from);
 	});
@@ -47,18 +51,18 @@ $(function() {
 
 	// a friend has gone offline
 	socket.on('userOffline', function(data) {
-		makeFriendOffline(data.friend, onlineFriends);
+		makeFriendOffline(data.user, onlineFriends, chattingWith);
 	});
 
 	// a friend has come online
 	socket.on('userOnline', function(data) {
-		makeFriendOnline(data.friend, onlineFriends);
+		makeFriendOnline(data.user, onlineFriends, chattingWith);
 	});
 });
 
-function makeFriendOffline(friend, onlineFriends) {
+function makeFriendOffline(friend, onlineFriends, chattingWith) {
 	onlineFriends.splice(onlineFriends.indexOf(friend), 1);
-	console.log('online friends: ' + onlineFriends);
+	console.log(friend + ' went offline');
 
 	if (chattingWith.indexOf(friend) > -1) { // chat window open
 		makeChatWindowOffline(friend);
@@ -66,7 +70,7 @@ function makeFriendOffline(friend, onlineFriends) {
 	makeFriendListItemOffline(friend, onlineFriends);
 }
 
-function makeFriendOnline(friend, onlineFriends) {
+function makeFriendOnline(friend, onlineFriends, chattingWith) {
 	if (onlineFriends.indexOf(friend) != -1) {
 		console.log('error: friend registered as online came online again');
 	} else {
@@ -82,6 +86,7 @@ function makeChatWindowOffline(friend) {
 }
 
 function makeChatWindowOnline(friend) {
+	console.log('making chat header online');
 	$('#chatHeader-' + friend).addClass('onlineChatHeader');
 }
 
@@ -93,10 +98,10 @@ function makeFriendListItemOffline(friend, onlineFriends) {
 
 function makeFriendListItemOnline(friend, onlineFriends) {
 	$('#friendLi-' + friend).addClass('onlineFriendLi');
-	$('#friendListUl').prepend($('#friendLi-' + friend));
+	$('.friendListUl').prepend($('#friendLi-' + friend));
 }
 
-function openChatWindow(friend, socket, chattingWith) {
+function openChatWindow(friend, socket, chattingWith, onlineFriends) {
 	$('.chats').append(chatWindow(friend));
 	socket.emit('talkTo', {
 		friend : friend
@@ -105,6 +110,9 @@ function openChatWindow(friend, socket, chattingWith) {
 	bindChatInput(friend, socket);
 	bindCloseChatWindow(chattingWith, friend);
 	chattingWith.push(friend);
+	if (onlineFriends.indexOf(friend) > -1) {
+		makeChatWindowOnline(friend);
+	}
 }
 
 function populateChatContent(friend, socket) {
@@ -114,8 +122,8 @@ function populateChatContent(friend, socket) {
 }
 
 function highlightChatWindow(friend) {
-	$('.highlightedChatWindow').removeClass('.highlightedChatWindow');
-	$('#chatWindow-' + friend).addClass('.highlightedChatWindow');
+	$('.highlightedChatWindow').removeClass('highlightedChatWindow');
+	$('#chatWindow-' + friend).addClass('highlightedChatWindow');
 }
 
 function bindChatInput(friend, socket) {
@@ -149,8 +157,9 @@ function bindCloseChatWindow(chattingWith, friend) {
 
 function friendListItem(friend, online) {
 	// friend = { username: '', firstName: '', lastName: ''}
+	var onlineClass = online ? ' onlineFriendLi' : '';
 	return (
-	  '<li class="friendLi" id="friendLi-' + friend.username + '">' + 
+	  '<li class="friendLi' + onlineClass + '" id="friendLi-' + friend.username + '">' + 
 	  friend.username + '</li>'
 	);
 }
@@ -158,12 +167,12 @@ function friendListItem(friend, online) {
 function chatWindow(friend) {
 	return (
     '<div class="chatWindow" id="chatWindow-' + friend + '">' +
-    '<div class="chatHeader" id="chatHeader->' + friend + '">' + friend +
+    '<div class="chatHeader" id="chatHeader-' + friend + '">' + friend +
     '<a href="" class="closeChatWindow" id="closeChatWindow-' + friend +
     '">x</a></div>' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div>' +
     '<div class="chatInputDiv">' +
-    '<input type="text" class="chatInput" id="chatInput-' + friend +
+    '<textarea cols="39" rows="5" class="chatInput" id="chatInput-' + friend +
 		'" /></div></div>'
 	);
 }

@@ -17,6 +17,7 @@ module.exports = function(io) {
           console.log('socket deleted from the list');
         });
         if (user.sockets.length == 0) { // the user is offline, so notify friends
+          console.log('user going offline, notifying friends');
           for (var i = 0; i < user.friends.length; i++) {
             User.findOne({ username : user.friends[i] }, function(err, friend) {
               for (var j = 0; j < friend.sockets.length; j++) {
@@ -82,6 +83,7 @@ function socketInit(socket) {
       console.log('socket added to the list');
     });
   });
+  socket.emit('userOnline', { user : socket.request.user.username});
 }
 
 function chatInit(socket) {
