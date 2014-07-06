@@ -136,10 +136,13 @@ function highlightChatWindow(friend) {
 }
 
 function bindChatInput(friend, socket, friends) {
-	$('#chatInput-' + friend).bind('keyup', function(evt) {
+	$('#chatInput-' + friend).bind('keypress', function(evt) {
 		var code = evt.keyCode || evt.which;
 		if (code == 13) {
-			sendChatMessage(friend, socket, friends);
+			evt.preventDefault();
+			if ($('#chatInput-' + friend).val() != '') {
+				sendChatMessage(friend, socket, friends);
+			}
 		}
 	});
 }
