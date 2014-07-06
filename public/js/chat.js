@@ -184,12 +184,23 @@ function chatWindow(friend) {
 		'" placeholder="Message..."/></div></div>'
 	);
 }
+function formatTime(time) {
+	var months=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+	var day = time.getDate(),
+		month = months[time.getMonth()],
+		minutes = time.getMinutes(),
+		hours = time.getHours();
+	return (month+ " " +day +", " + hours+":"+minutes);
+}
 
 function chatMessage(from, time, content) {
+	if (typeof time == 'string') {
+		time = new Date(time);
+	}
 	return (
 	  '<div class="chatMessage">' + 
 	  '<div class="chatMessageSender">' + from + '</div>' +
-	  '<div class="chatMessageTime">' + time + '</div>' +
+	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
 	  '<div class="chatMessageContent">' + content + '</div>' +
 	  '</div>'
 	);
