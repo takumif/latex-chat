@@ -4,6 +4,8 @@
   <title>sushiOstrich</title>
   <script>
     user = '<%= user.username %>';
+    userFirstName = '<%= user.firstName %>';
+    userLastName = '<%= user.lastName %>';
   </script>
   <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.3.min.js">
   </script>
@@ -14,7 +16,7 @@
 </head>
 <body>
   <div class="navbar"><p id="title">SushiOstrich</p>
-    <p id="userName"><%= user.username %></p>
+    <p id="userName"><%= user.firstName %> <%= user.lastName %></p>
     <a href="/settings"><img id="setIcon" src="/img/settings.png" alt="Account Settings"/></a>
     <a href="/logout"><img id="logoutIcon" src="/img/logout.png" alt="LogOut"></a>
   </div>

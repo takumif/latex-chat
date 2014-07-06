@@ -26,7 +26,7 @@ $(function() {
 			$('.friendLi').click(function() { // open chat window with the friend
 				var friend = $(this).attr('id').slice(9);
 				if (chattingWith.indexOf(friend) == -1) { // if not already chatting
-					openChatWindow(friend, socket, chattingWith, onlineFriends);
+					openChatWindow(friend, socket, chattingWith, onlineFriends, friends);
 				}
 			});
 		}
@@ -34,9 +34,9 @@ $(function() {
 
 	socket.on('receiveMessage', function(data) {
 		if (chattingWith.indexOf(data.from) > -1) { // chat window already open
-			$('#chatContent-' + data.from).append(chatMessage(data.from, data.time, data.content));
+			$('#chatContent-' + data.from).append(chatMessage(data.from, data.time, data.content, friends));
 		} else { // chat window not open, so open it
-			openChatWindow(data.from, socket, chattingWith, onlineFriends);
+			openChatWindow(data.from, socket, chattingWith, onlineFriends, friends);
 		}
 		highlightChatWindow(data.from);
 	});
@@ -46,7 +46,7 @@ $(function() {
 		if (chattingWith.indexOf(data.from) > -1) {
 			var chatContent = $('#chatContent-' + data.from);
 			for (var i = 0; i < data.messages.length; i++) {
-				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content));
+				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 			}
 		}
 	});
@@ -107,13 +107,13 @@ function makeFriendListItemOnline(friend, onlineFriends) {
 	$('.friendListUl').prepend($('#friendLi-' + friend));
 }
 
-function openChatWindow(friend, socket, chattingWith, onlineFriends) {
-	$('.chats').append(chatWindow(friend));
+function openChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
+	$('.chats').append(chatWindow(friend, friends));
 	socket.emit('talkTo', {
 		friend : friend
 	});
 	populateChatContent(friend, socket);
-	bindChatInput(friend, socket);
+	bindChatInput(friend, socket, friends);
 	bindCloseChatWindow(chattingWith, friend);
 	chattingWith.push(friend);
 	if (onlineFriends.indexOf(friend) > -1) {
@@ -133,16 +133,16 @@ function highlightChatWindow(friend) {
 	$('#chatWindow-' + friend).addClass('highlightedChatWindow');
 }
 
-function bindChatInput(friend, socket) {
+function bindChatInput(friend, socket, friends) {
 	$('#chatInput-' + friend).bind('keypress', function(evt) {
 		var code = evt.keyCode || evt.which;
 		if (code == 13) {
-			sendChatMessage(friend, socket);
+			sendChatMessage(friend, socket, friends);
 		}
 	});
 }
 
-function sendChatMessage(friend, socket) {
+function sendChatMessage(friend, socket, friends) {
 	var content = $('#chatInput-' + friend).val();
 	var time = new Date();
 	socket.emit('sendMessage', {
@@ -151,7 +151,7 @@ function sendChatMessage(friend, socket) {
 		time : time
 	});
 	$('#chatInput-' + friend).val('');
-	$('#chatContent-' + friend).append(chatMessage(user, time, content));
+	$('#chatContent-' + friend).append(chatMessage(user, time, content, friends));
 }
 
 function bindCloseChatWindow(chattingWith, friend) {
@@ -167,14 +167,15 @@ function friendListItem(friend, online) {
 	var onlineClass = online ? ' onlineFriendLi' : '';
 	return (
 	  '<li class="friendLi' + onlineClass + '" id="friendLi-' + friend.username + '">' + 
-	  friend.username + '</li>'
+	  friend.firstName + ' ' + friend.lastName + '</li>'
 	);
 }
 
-function chatWindow(friend) {
+function chatWindow(friend, friends) {
+	var name = getName(friends, friend);
 	return (
     '<div class="chatWindow" id="chatWindow-' + friend + '">' +
-    '<div class="chatHeader" id="chatHeader-' + friend + '">' + friend +
+    '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
     '<a href="" class="closeChatWindow" id="closeChatWindow-' + friend +
     '">x</a></div>' +
     '<div class="chatContentWrapper"><div class="chatContentWrapper2">' +
@@ -196,13 +197,14 @@ function formatTime(time) {
 	return (month+ " " +day +", " + hours+":"+minutes);
 }
 
-function chatMessage(from, time, content) {
+function chatMessage(from, time, content, friends) {
 	if (typeof time == 'string') {
 		time = new Date(time);
 	}
+	var name = (from == user) ? userFirstName : getFirstName(friends, from);
 	return (
 	  '<div class="chatMessage">' + 
-	  '<div class="chatMessageSender">' + from + '</div>' +
+	  '<div class="chatMessageSender">' + name + '</div>' +
 	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
 	  '<div class="chatMessageContent">' + content + '</div>' +
 	  '</div>'
@@ -244,5 +246,13 @@ function doneTypingSearch(socket) {
 	}
 }
 
+function getFirstName(friends, username) {
+	var f = friends.filter(function(obj) { return obj.username == username })[0];
+	return f.firstName;
+}
 
+function getName(friends, username) {
+	var f = friends.filter(function(obj) { return obj.username == username })[0];
+	return (f.firstName + ' ' + f.lastName);
+}
 
