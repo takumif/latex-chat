@@ -20,7 +20,7 @@ module.exports = function(io) {
           for (var i = 0; i < user.friends.length; i++) {
             User.findOne({ username : user.friends[i] }, function(err, friend) {
               for (var j = 0; j < friend.sockets.length; j++) {
-                io.to(friend.sockets[i].emit('userOffline', { user : user.username }));
+                io.to(friend.sockets[i]).emit('userOffline', { user : user.username });
               }
             });
           }
