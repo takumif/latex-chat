@@ -106,6 +106,14 @@ body{
 	border-left: 3px solid #ccc;
 }
 
+.friendLi:hover {
+	background-color: #F5F5F5;
+}
+
+.friendLi:active {
+	background-color: #E6E6E6;
+}
+
 .onlineFriendLi {
 	border-left: 3px solid #91E02F ;
 }
@@ -145,26 +153,30 @@ body{
 }
 
 .chatWindow {
-  	float : right;
 	width: 300px;
 	height: 100%;
 
+  	float : right;
 
 	margin: 33px 20px 0 0;
+	border: solid 1px #ccd0bd;
+	box-shadow: 0 0 2px 2px #DEDEDE;
 }
 
 /* Containg name + Close window */
 .chatHeader {
-	margin: 0 0 3px 0;
+	margin: 0;
 
 	height: 35px;
 	width: 300px;
 
 	text-align: left;
-	font-size: 20px;
+	font: bold 17px Arial;
 
 	padding-left: 15px;
-	padding-top: 6px;
+	padding-top: 8px;
+
+	border-bottom: 1px solid #DBDBDB;
 
 	background-color: #DEDEDE;
 
@@ -173,10 +185,17 @@ body{
 	-webkit-box-sizing: border-box;
 	-mox-box-sizing: border-box;
 } 
+	.onlineChatHeader{
+		border-left: 3px solid #91E02F;
+	}
 
 	.closeChatWindow {
 		float: right;
 		margin-right: 15px;
+		font: 18px Arial, sans-serif;
+
+		text-decoration: none;
+		color: black;
 
 		vertical-align: middle;
 	}
@@ -184,7 +203,7 @@ body{
 
 
 /* All Messages are here */
-.chatContent {
+.chatContentWrapper {
 	height: 100%;
 	overflow-y: scroll;
 
@@ -195,10 +214,12 @@ body{
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	-mox-box-sizing: border-box;
+
+	vertical-align: bottom;
 }
 
 	.chatMessageSender {
-		font: bold 17px Arial, sans-serif;
+		font: bold 16px Arial, sans-serif;
 		float: left;
 		margin-left: 0;
 	}
@@ -219,9 +240,18 @@ body{
 
 .chatInputDiv {
 	position: relative;
+	padding: 5px 5px;
 	bottom: 0;
+	outline-width: 0;
+
+	border-top: 1px solid #DEDEDE;
+	box-shadow: 0 -2px 5px -2px #DBDBDB;
 }
 
 .chatInput {
 	resize : none;
+	border: none;
+	outline-width: 0px;
+
+	font: 16px Arial, sans-serif;
 }

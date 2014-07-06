@@ -172,11 +172,11 @@ function chatWindow(friend) {
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + friend +
     '<a href="" class="closeChatWindow" id="closeChatWindow-' + friend +
     '">x</a></div>' +
-    '<div class="chatContentWrapper">' +
-    '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
+    '<div class="chatContentWrapper"><div class="chatContentWrapper2">' +
+    '<div class="chatContent" id="chatContent-' + friend + '"></div></div></div>' +
     '<div class="chatInputDiv">' +
     '<textarea cols="39" rows="5" class="chatInput" id="chatInput-' + friend +
-		'" required/></div></div>'
+		'" placeholder="Message..."/></div></div>'
 	);
 }
 
