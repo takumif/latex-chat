@@ -183,7 +183,6 @@ body{
 	box-shadow: 0 0 2px 2px #DEDEDE;
 }
 
-
 /* Containg name + Close window */
 .chatHeader {
 	height: 35px;
@@ -246,6 +245,12 @@ body{
 	-webkit-box-sizing: border-box;
 	-mox-box-sizing: border-box;
 }
+
+.selectedChatWindow {
+	box-shadow: 0 0 3px 3px #ccc;
+
+}
+
 	.chatContent {
 		padding-top: 5px;
 	}
