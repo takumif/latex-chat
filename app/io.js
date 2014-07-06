@@ -16,6 +16,15 @@ module.exports = function(io) {
         User.findOneAndUpdate({ username : user.username }, {sockets : user.sockets}, function() {
           console.log('socket deleted from the list');
         });
+        if (user.sockets.length == 0) { // the user is offline, so notify friends
+          for (var i = 0; i < user.friends.length; i++) {
+            User.findOne({ username : user.friends[i] }, function(err, friend) {
+              for (var j = 0; j < friend.sockets.length; j++) {
+                io.to(friend.sockets[i].emit('userOffline', { user : user.username }));
+              }
+            });
+          }
+        }
       });
       console.log('disconnect');
     });
@@ -78,6 +87,7 @@ function socketInit(socket) {
 function chatInit(socket) {
   if (socket.request.user.friends) {
     var friendsArray = socket.request.user.friends;
+    var onlineFriends = [];
     var friends = [];
     for (var i = 0; i < friendsArray.length; i++) {
       User.findOne({ username : friendsArray[i] }, function(err, friendData) {
@@ -86,10 +96,18 @@ function chatInit(socket) {
         friend.firstName = friendData.firstName;
         friend.lastName = friendData.lastName;
 
+        // if online, add to the list of online friends
+        if (friendData.sockets.length > 0) {
+          onlineFriends.push(friendData.username);
+        }
+
         friends.push(friend);
         if (friends.length == friendsArray.length) {
           console.log('emitting initFriends');
-          socket.emit('initFriends', { friends : friends });
+          socket.emit('initFriends', {
+            friends : friends,
+            onlineFriends : onlineFriends
+          });
         }
       });
     }

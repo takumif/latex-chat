@@ -1,16 +1,19 @@
 $(function() {
 	var chattingWith = [];
+	var onlineFriends = [];
+	var friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 
 	var socket = io.connect('http://localhost:8080');
 
 	socket.on('initFriends', function(data) {
+		if (data.onlineFriends) {
+			onlineFriends = data.onlineFriends;
+		}
 		if (data.friends) {
-			console.log('data received');
-			$('.friendList').append('<ul>');
-			for (var i = 0; i < data.friends.length; i++) {
-				$('.friendList').append('<li class="friendLi" id="friendLi-' + data.friends[i].username + '">' + data.friends[i].username);
+			friends = data.friends;
+			for (var i = 0; i < friends.length; i++) {
+				$('.friendListUl').append(friendListItem(friends[i], online));
 			}
-			$('.friendList').append('</ul>');
 
 			$('.friendLi').click(function() { // open chat window with the friend
 				var friend = $(this).attr('id').slice(9);
@@ -39,8 +42,57 @@ $(function() {
 			}
 		}
 	});
+
+	// a friend has gone offline
+	socket.on('userOffline', function(data) {
+		makeFriendOffline(data.friend, onlineFriends);
+	});
+
+	// a friend has come online
+	socket.on('userOnline', function(data) {
+		makeFriendOnline(data.friend, onlineFriends);
+	});
 });
 
+function makeFriendOffline(friend, onlineFriends) {
+	onlineFriends.splice(onlineFriends.indexOf(friend), 1);
+	console.log('online friends: ' + onlineFriends);
+
+	if (chattingWith.indexOf(friend) > -1) { // chat window open
+		makeChatWindowOffline(friend);
+	}
+	makeFriendListItemOffline(friend, onlineFriends);
+}
+
+function makeFriendOnline(friend, onlineFriends) {
+	if (onlineFriends.indexOf(friend) != -1) {
+		console.log('error: friend registered as online came online again');
+	} else {
+		if (chattingWith.indexOf(friend) > -1) { // chat window open
+			makeChatWindowOnline(friend);
+		}
+		makeFriendListItemOnline(friend, onlineFriends);
+	}
+}
+
+function makeChatWindowOffline(friend) {
+	$('#chatHeader-' + friend).removeClass('onlineChatHeader');
+}
+
+function makeChatWindowOnline(friend) {
+	$('#chatHeader-' + friend).addClass('onlineChatHeader');
+}
+
+function makeFriendListItemOffline(friend, onlineFriends) {
+	$('#friendLi-' + friend).removeClass('onlineFriendLi');
+	var lastOnline = onlineFriends[onlineFriends.length - 1];
+	$('#friendLi-' + friend).insertAfter($('#friendLi-' + lastOnline.username));
+}
+
+function makeFriendListItemOnline(friend, onlineFriends) {
+	$('#friendLi-' + friend).addClass('onlineFriendLi');
+	$('#friendListUl').prepend($('#friendLi-' + friend));
+}
 
 function openChatWindow(friend, socket, chattingWith) {
 	$('.chats').append(chatWindow(friend));
@@ -93,14 +145,25 @@ function bindCloseChatWindow(chattingWith, friend) {
 	});
 }
 
+function friendListItem(friend, online) {
+	// friend = { username: '', firstName: '', lastName: ''}
+	return (
+	  '<li class="friendLi" id="friendLi-' + friend.username + '">' + 
+	  friend.username + '</li>'
+	);
+}
+
 function chatWindow(friend) {
-	return ('<div class="chatWindow" id="chatWindow-' + friend + '">' +
-	        '<div class="chatHeader">' + friend +
-	        '<a href="" class="closeChatWindow" id="closeChatWindow-' + friend +
-	        '">x</a></div>' +
-	        '<div class="chatContent" id="chatContent-' + friend + '"></div>' +
-	        '<input type="text" class="chatInput" id="chatInput-' + friend +
-	  			'" /></div>');
+	return (
+    '<div class="chatWindow" id="chatWindow-' + friend + '">' +
+    '<div class="chatHeader" id="chatHeader->' + friend + '">' + friend +
+    '<a href="" class="closeChatWindow" id="closeChatWindow-' + friend +
+    '">x</a></div>' +
+    '<div class="chatContent" id="chatContent-' + friend + '"></div>' +
+    '<div class="chatInputDiv">' +
+    '<input type="text" class="chatInput" id="chatInput-' + friend +
+		'" /></div></div>'
+	);
 }
 
 function chatMessage(from, time, content) {
