@@ -7,3 +7,4 @@ $(function() {
 function resizeChatContentWrapper() {
   $('.chatContentWrapper').height($(window).height() - 170);
 }
+
