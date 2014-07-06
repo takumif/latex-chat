@@ -7,7 +7,7 @@ module.exports = function(io) {
 
 	io.sockets.on('connection', function(socket) {
 
-    socketInit(socket);
+    socketInit(io, socket);
     chatInit(socket);
 
     socket.on('disconnect', function() {
@@ -21,7 +21,7 @@ module.exports = function(io) {
           for (var i = 0; i < user.friends.length; i++) {
             User.findOne({ username : user.friends[i] }, function(err, friend) {
               for (var j = 0; j < friend.sockets.length; j++) {
-                io.to(friend.sockets[i]).emit('userOffline', { user : user.username });
+                io.to(friend.sockets[j]).emit('userOffline', { user : user.username });
               }
             });
           }
@@ -75,15 +75,27 @@ module.exports = function(io) {
 	});
 }
 
-function socketInit(socket) {
+function socketInit(io, socket) {
   User.findOne({ username : socket.request.user.username }, function(err, user) {
     user.sockets.push(socket.id);
     console.log(user.sockets);
     User.findOneAndUpdate({ username : user.username }, {sockets : user.sockets}, function() {
       console.log('socket added to the list');
     });
+
+    if (user.sockets.length == 1) {
+      // came online, so notify friends
+      for (var i = 0; i < user.friends.length; i++) {
+        User.findOne({ username : user.friends[i] }, function(err, friend) {
+          console.log('notifying ' + friend.username + ' that ' + user.username + ' came online');
+          for (var j = 0; j < friend.sockets.length; j++) {
+            console.log('notifying ' + friend.sockets[j] + ' that ' + user.username + ' came online');
+            io.to(friend.sockets[j]).emit('userOnline', { user : user.username });
+          }
+        });
+      }
+    }
   });
-  socket.emit('userOnline', { user : socket.request.user.username});
 }
 
 function chatInit(socket) {
