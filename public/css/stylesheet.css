@@ -1,3 +1,9 @@
+body{
+	position: fixed;
+	overflow-y: hidden;
+	width: 100%
+}
+
 body {
 	font-family: Arial, sans-serif;
 	word-wrap: break-word;
@@ -108,7 +114,6 @@ body {
 	height: 100%;
 
 	margin: 33px 20px 0 0;
-
 }
 
 .chatHeader {
@@ -118,8 +123,46 @@ body {
 	text-align: left;
 	font-size: 20px;
 
+	padding-left: 15px;
+	padding-top: 6px;
+
 	background-color: #DEDEDE;
+
+	/*To keep the padding within the box*/
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-mox-box-sizing: border-box;
 } 
 
+.closeChatWindow {
+	float: right;
+	margin-right: 15px;
+
+	vertical-align: middle;
+}
+
 .chatContent {
+	padding-left: 15px;	
+	padding-right: 15px;
+
+	/*To keep the padding within the box*/
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-mox-box-sizing: border-box;
+}
+
+.chatMessageSender {
+	font: bold 17px Arial, sans-serif;
+	float: left;
+	margin-left: 0;
+}
+
+.chatMessageTime {
+	font: Helvetica, sans-serif;
+	font-size: 9px;
+	float: right;
+}
+
+.chatMessageContent {
+	clear: both;
 }
