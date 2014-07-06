@@ -74,6 +74,7 @@ function makeFriendOnline(friend, onlineFriends, chattingWith) {
 	if (onlineFriends.indexOf(friend) != -1) {
 		console.log('error: friend registered as online came online again');
 	} else {
+		console.log(friend + ' came online');
 		if (chattingWith.indexOf(friend) > -1) { // chat window open
 			makeChatWindowOnline(friend);
 		}
