@@ -5,6 +5,8 @@ $(function() {
 
 	var socket = io.connect('http://localhost:8080');
 
+	searchInit(socket);
+
 	socket.on('initFriends', function(data) {
 		if (data.onlineFriends) {
 			onlineFriends = data.onlineFriends;
@@ -61,6 +63,7 @@ $(function() {
 });
 
 function makeFriendOffline(friend, onlineFriends, chattingWith) {
+	console.log(onlineFriends);
 	onlineFriends.splice(onlineFriends.indexOf(friend), 1);
 	console.log(friend + ' went offline');
 
@@ -75,6 +78,7 @@ function makeFriendOnline(friend, onlineFriends, chattingWith) {
 		console.log('error: friend registered as online came online again');
 	} else {
 		console.log(friend + ' came online');
+		onlineFriends.push(friend);
 		if (chattingWith.indexOf(friend) > -1) { // chat window open
 			makeChatWindowOnline(friend);
 		}
@@ -94,7 +98,8 @@ function makeChatWindowOnline(friend) {
 function makeFriendListItemOffline(friend, onlineFriends) {
 	$('#friendLi-' + friend).removeClass('onlineFriendLi');
 	var lastOnline = onlineFriends[onlineFriends.length - 1];
-	$('#friendLi-' + friend).insertAfter($('#friendLi-' + lastOnline.username));
+	console.log(onlineFriends);
+	$('#friendLi-' + friend).insertAfter($('#friendLi-' + lastOnline));
 }
 
 function makeFriendListItemOnline(friend, onlineFriends) {
@@ -189,5 +194,41 @@ function chatMessage(from, time, content) {
 	  '</div>'
 	);
 }
+
+// ===================== SEARCH FUNCTION ==============================
+
+function searchInit(socket) {
+	var typingTimer;                //timer identifier
+  var doneTypingInterval = 500;  //time in ms, 5 second for example
+
+	//on keyup, start the countdown
+	$('#searchBar').keyup(function(){
+    clearTimeout(typingTimer);
+    $('#searchResult').html('');
+    typingTimer = setTimeout(function() { doneTypingSearch(socket) }, doneTypingInterval);
+	});
+
+	//on keydown, clear the countdown 
+	$('#searchBar').keydown(function(){
+	  clearTimeout(typingTimer);
+	  $('#searchResult').html('');
+	});
+
+	socket.on('searchResult', function(data) {
+		if (data.found) {
+			$('#searchResult').html('<img id="searchAdd" src="/img/add.png">');
+		} else {
+		  $('#searchResult').html('');
+		}
+	});
+}
+
+function doneTypingSearch(socket) {
+	if ($('#searchBar').val() != '') {
+		$('#searchResult').html('<img id="searchAdd" src="/img/loading.gif">');
+	  socket.emit('searchInput', { search : $('#searchBar').val() });
+	}
+}
+
 
 

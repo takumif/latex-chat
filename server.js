@@ -48,4 +48,4 @@ var io = require('socket.io').listen(app.listen(port));
 require('./config/passportSocketIo')(io, cookieParser, mongoStore, sessionSecret);
 require('./app/io')(io);
 
-console.log('The magic happens on port ' + port);
+console.log('The server is running on port ' + port);

@@ -72,6 +72,14 @@ module.exports = function(io) {
       });
     });
 
+    socket.on('searchInput', function(data) {
+      User.findOne({ username : data.search }, function(err, user) {
+        socket.emit('searchResult', {
+          found : ((user != null) ? true : false)
+        });
+      });
+    });
+
 	});
 }
 
@@ -89,7 +97,6 @@ function socketInit(io, socket) {
         User.findOne({ username : user.friends[i] }, function(err, friend) {
           console.log('notifying ' + friend.username + ' that ' + user.username + ' came online');
           for (var j = 0; j < friend.sockets.length; j++) {
-            console.log('notifying ' + friend.sockets[j] + ' that ' + user.username + ' came online');
             io.to(friend.sockets[j]).emit('userOnline', { user : user.username });
           }
         });
