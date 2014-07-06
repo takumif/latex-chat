@@ -21,23 +21,11 @@ body{
   height : 100%;
 }
 
-.chats {
-  float : left;
-  height : 100%;
 
-  padding: 5px 10px;
-}
-
-.chatWindow {
-  float : right;
-  height : 100%;
-
-  margin-top: 30px;
-}
 
 
 /* ==============================================
-   ================ NAVBAR =====================
+   ================ NAVBAR =======================
 */
 .navbar {
 	position: fixed;
@@ -90,32 +78,83 @@ body{
   width : 200px;
   height: 100%;
 
-  margin-top: 30px;
+  margin-top: 39px;
+
+  border-left: solid;
+  border-width: 1px;
+  border-color: #ccd0bd;
+  box-shadow: -1px 0 5px 0 #ccc;
 }
-.friendList {
-	padding: 0 24px 0 24px;
 
-	font: Arial, sans-serif;
-	background-color: yellow;
+.friendListUl {
+	padding: 0;
+	list-style: none;
+	margin: 0;
+
+	font: 15px Arial, sans-serif;
+
+	border-bottom: 1px solid #ccc;
+}
+
+.friendLi {
+	width: 100%;
+	height: 40px;
+
+	padding-left: 10px;
+	padding-top: 3px;
+
+	border-top: 1px solid #ccc;
+	display: block;
+}
+
+#searchBar {
+	width: 150px;
+	height: 30px;
+	padding: 6px 15px;
+	margin: 3px;
+	border-width: 0px;
+
+	outline-width: 0px;
+
+	/*To keep the padding within the box*/
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-mox-box-sizing: border-box;
 }
 
 
+
+
+#searchIcon {
+	vertical-align: middle;
+}
+
+/* 
+.chats {
+  float : left;
+  height : 100%;
+
+  padding: 5px 10px;
+}
+*/
 
 /* ==============================================
-   ================ CHATS =====================
+   ================ CHATS =======================
 */
 
 .chats {
 	left: 0;
 	margin-right: 200px;
+	height: 100%;
 
 	float:right;
 
 }
 
 .chatWindow {
+  	float : right;
+  	height : 100%;
 	width: 300px;
-	height: 90%;
 
 
 	margin: 33px 20px 0 0;
@@ -123,6 +162,7 @@ body{
 
 /* Containg name + Close window */
 .chatHeader {
+	margin: 0 0 3px 0;
 
 	height: 35px;
 	width: 300px;
