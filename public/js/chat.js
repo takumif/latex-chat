@@ -67,7 +67,7 @@ $(function() {
 
 function documentInit() {
 	$(window).click(function() {
-		$('.selectedChatWindow').removeClass('.selectedChatWindow');
+		$('.selectedChatWindow').removeClass('selectedChatWindow');
 	});
 }
 
@@ -134,10 +134,13 @@ function openChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 }
 
 function selectChatWindow(friend) {
+	console.log('selectChatWindow');
 	var w = $('#chatWindow-' + friend);
-	if (!w.hasClass('selectedChatWindow')) {
-		w.addClass('selectedChatWindow');
-	}
+	setTimeout(function() { // give time for the previous selection to disappear
+		if (!w.hasClass('selectedChatWindow')) {
+			w.addClass('selectedChatWindow');
+		}
+	}, 50);
 	w.find('textarea').focus();
 }
 
