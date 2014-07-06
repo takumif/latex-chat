@@ -22,8 +22,6 @@ body{
 }
 
 
-
-
 /* ==============================================
    ================ NAVBAR =======================
 */
@@ -129,14 +127,6 @@ body{
 	vertical-align: middle;
 }
 
-/* 
-.chats {
-  float : left;
-  height : 100%;
-
-  padding: 5px 10px;
-}
-*/
 
 /* ==============================================
    ================ CHATS =======================
@@ -153,8 +143,8 @@ body{
 
 .chatWindow {
   	float : right;
-  	height : 100%;
 	width: 300px;
+	height: 100%;
 
 
 	margin: 33px 20px 0 0;
@@ -193,7 +183,9 @@ body{
 /* All Messages are here */
 .chatContent {
 	height: 100%;
-	overflow: scroll;
+	overflow-y: scroll;
+
+	margin-bottom: auto;
 
 	padding-left: 15px;	
 	padding-right: 15px;
@@ -203,9 +195,6 @@ body{
 	-webkit-box-sizing: border-box;
 	-mox-box-sizing: border-box;
 }
-
-	.chatMessage {
-	}
 
 	.chatMessageSender {
 		font: bold 17px Arial, sans-serif;
@@ -223,10 +212,12 @@ body{
 		clear: both;
 	}
 
-.chatInput {
+/* ==============================================
+   ================ CHATS =======================
+*/
+
+.chatInputDiv {
 	position: absolute;
 	bottom: 0;
-	margin-bottom: 20px;
-	resize: none;
 
 }
