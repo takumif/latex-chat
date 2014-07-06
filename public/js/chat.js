@@ -39,6 +39,7 @@ $(function() {
 			openChatWindow(data.from, socket, chattingWith, onlineFriends, friends);
 		}
 		highlightChatWindow(data.from);
+		scrollChatToBottom(data.from, true);
 	});
 
 	// receiving messages to populate the newly-opened chat window with
@@ -48,6 +49,7 @@ $(function() {
 			for (var i = 0; i < data.messages.length; i++) {
 				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 			}
+			scrollChatToBottom(data.from, false);
 		}
 	});
 
@@ -134,7 +136,7 @@ function highlightChatWindow(friend) {
 }
 
 function bindChatInput(friend, socket, friends) {
-	$('#chatInput-' + friend).bind('keypress', function(evt) {
+	$('#chatInput-' + friend).bind('keyup', function(evt) {
 		var code = evt.keyCode || evt.which;
 		if (code == 13) {
 			sendChatMessage(friend, socket, friends);
@@ -150,7 +152,7 @@ function sendChatMessage(friend, socket, friends) {
 		friend : friend,
 		time : time
 	});
-	$('#chatInput-' + friend).val('');
+	$('#chatInput-' + friend).val(null);
 	$('#chatContent-' + friend).append(chatMessage(user, time, content, friends));
 }
 
@@ -178,8 +180,8 @@ function chatWindow(friend, friends) {
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
     '<a href="" class="closeChatWindow" id="closeChatWindow-' + friend +
     '">x</a></div>' +
-    '<div class="chatContentWrapper"><div class="chatContentWrapper2">' +
-    '<div class="chatContent" id="chatContent-' + friend + '"></div></div></div>' +
+    '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
+    '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
     '<div class="chatInputDiv">' +
     '<textarea cols="39" rows="5" class="chatInput" id="chatInput-' + friend +
 		'" placeholder="Message..."/></div></div>'
@@ -209,6 +211,25 @@ function chatMessage(from, time, content, friends) {
 	  '<div class="chatMessageContent">' + content + '</div>' +
 	  '</div>'
 	);
+}
+
+function getFirstName(friends, username) {
+	var f = friends.filter(function(obj) { return obj.username == username })[0];
+	return f.firstName;
+}
+
+function getName(friends, username) {
+	var f = friends.filter(function(obj) { return obj.username == username })[0];
+	return (f.firstName + ' ' + f.lastName);
+}
+
+function scrollChatToBottom(friend, animate) {
+	var d = $('#chatContentWrapper-' + friend);
+	if (animate) {
+		d.animate({ scrollTop : d.prop('scrollHeight') }, 300);
+	} else {
+		d.scrollTop(d.prop('scrollHeight'));
+	}
 }
 
 // ===================== SEARCH FUNCTION ==============================
@@ -246,13 +267,4 @@ function doneTypingSearch(socket) {
 	}
 }
 
-function getFirstName(friends, username) {
-	var f = friends.filter(function(obj) { return obj.username == username })[0];
-	return f.firstName;
-}
-
-function getName(friends, username) {
-	var f = friends.filter(function(obj) { return obj.username == username })[0];
-	return (f.firstName + ' ' + f.lastName);
-}
 
