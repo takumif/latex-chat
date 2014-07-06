@@ -11,6 +11,8 @@ body{
 
 	font-family: Arial, sans-serif;
 	word-wrap: break-word;
+
+	color: #787878;
 }
 
 .header {
@@ -36,12 +38,13 @@ body{
 	margin: auto;
 	padding: 5px 30px 10px 15px;
 
-	background: #DEDEDE;
+	background: #F5F5F5;
 
 	font: 17px Arial, sans-serif;
 	text-align: right;
 
-	box-shadow: 0px 1px rgba(0,0,0,0.2)
+
+	box-shadow: 0px 1px #ccd0bd;
 }
 
 #setIcon {
@@ -126,10 +129,11 @@ body{
 #searchBar {
 	width: 150px;
 	height: 30px;
+
 	padding: 6px 5px;
 	margin: 3px;
-	border-width: 0px;
 
+	border-width: 0px;
 	outline-width: 0px;
 
 	/*To keep the padding within the box*/
@@ -149,10 +153,10 @@ body{
 */
 
 .chats {
-	left: 0;
-	margin-right: 210px;
 	height: 100%;
+	left: 0;
 
+	margin-right: 210px;
 	float:right;
 
 }
@@ -161,29 +165,30 @@ body{
 	width: 300px;
 	height: 100%;
 
+	margin: 33px 20px 0 0;
+
+	border: solid 1px #ccd0bd;
   	float : right;
 
-	margin: 33px 20px 0 0;
-	border: solid 1px #ccd0bd;
 	box-shadow: 0 0 2px 2px #DEDEDE;
 }
 
 /* Containg name + Close window */
 .chatHeader {
-	margin: 0;
-
 	height: 35px;
 	width: 300px;
 
-	text-align: left;
-	font: bold 17px Arial;
-
+	margin: 0;
 	padding-left: 15px;
-	padding-top: 8px;
+	padding-top: 10px;
 
+	background-color: #F5F5F5;
+
+	text-align: left;
+	font: bold 16px Arial;
+
+	border-left: 3px solid #ccc;
 	border-bottom: 1px solid #DBDBDB;
-
-	background-color: #DEDEDE;
 
 	/*To keep the padding within the box*/
 	box-sizing: border-box;
@@ -197,15 +202,16 @@ body{
 	.closeChatWindow {
 		height: 23px;
 		width: 23px;
+
 		margin-top: 0;
 		margin-right: 4px;
 
+		color: black;
+
 		float: right;;
 		font: 18px Arial, sans-serif;
-
-		text-decoration: none;
-		color: black;
 		text-align: center;
+		text-decoration: none;
 	}
 
 	.closeChatWindow:hover, .closeChatWindow:active {
@@ -221,29 +227,39 @@ body{
 	padding-left: 15px;	
 	padding-right: 15px;
 
+	color: black;
+
+	vertical-align: bottom;
+
 	/*To keep the padding within the box*/
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	-mox-box-sizing: border-box;
-
-	vertical-align: bottom;
 }
 
-	.chatMessageSender {
-		font: bold 16px Arial, sans-serif;
-		float: left;
-		margin-left: 0;
+	.chatMessage{
+		margin-bottom: 4px;
 	}
 
-	.chatMessageTime {
-		font: Helvetica, sans-serif;
-		font-size: 9px;
-		float: right;
-	}
+		.chatMessageSender {
+			margin-left: 0;
 
-	.chatMessageContent {
-		clear: both;
-	}
+			font: bold 14px Arial, sans-serif;
+			float: left;
+		}
+
+		.chatMessageTime {
+			float: right;
+
+			color: grey;
+			font: 10px sans-serif, sans-serif;
+		}
+
+		.chatMessageContent {
+			margin-top: 2px;
+			font-size: 13px;
+			clear: both;
+		}
 
 /* ==============================================
    ================ INPUT =======================
@@ -251,18 +267,20 @@ body{
 
 .chatInputDiv {
 	position: relative;
-	padding: 5px 5px;
 	bottom: 0;
-	outline-width: 0;
 
+	padding: 5px 5px;
+
+	outline-width: 0;
 	border-top: 1px solid #DEDEDE;
 	box-shadow: 0 -2px 5px -2px #DBDBDB;
 }
 
 .chatInput {
+	outline-width: 0px;
 	resize : none;
 	border: none;
-	outline-width: 0px;
 
-	font: 16px Arial, sans-serif;
+	font: 13px Arial, sans-serif;
+	
 }
