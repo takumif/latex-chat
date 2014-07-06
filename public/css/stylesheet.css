@@ -218,6 +218,10 @@ body{
 */
 
 .chatInputDiv {
-	position: absolute;
+	position: relative;
 	bottom: 0;
+}
+
+.chatInput {
+	resize : none;
 }
