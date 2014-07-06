@@ -11,7 +11,9 @@ $(function() {
 		}
 		if (data.friends) {
 			friends = data.friends;
+			
 			for (var i = 0; i < friends.length; i++) {
+				var online = (onlineFriends.indexOf(friends[i].username) > -1) ? true : false;
 				$('.friendListUl').append(friendListItem(friends[i], online));
 			}
 
