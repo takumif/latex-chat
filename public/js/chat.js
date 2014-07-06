@@ -6,6 +6,7 @@ $(function() {
 	var socket = io.connect('http://localhost:8080');
 
 	searchInit(socket);
+	documentInit();
 
 	socket.on('initFriends', function(data) {
 		if (data.onlineFriends) {
@@ -63,6 +64,12 @@ $(function() {
 		makeFriendOnline(data.user, onlineFriends, chattingWith);
 	});
 });
+
+function documentInit() {
+	$(window).click(function() {
+		$('.selectedChatWindow').removeClass('selectedChatWindow');
+	});
+}
 
 function makeFriendOffline(friend, onlineFriends, chattingWith) {
 	console.log(onlineFriends);
@@ -122,6 +129,25 @@ function openChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 		makeChatWindowOnline(friend);
 	}
 	resizeChatContentWrapper();
+	selectChatWindow(friend);
+	bindChatWindow(friend);
+}
+
+function selectChatWindow(friend) {
+	console.log('selectChatWindow');
+	var w = $('#chatWindow-' + friend);
+	setTimeout(function() { // give time for the previous selection to disappear
+		if (!w.hasClass('selectedChatWindow')) {
+			w.addClass('selectedChatWindow');
+		}
+	}, 50);
+	w.find('textarea').focus();
+}
+
+function bindChatWindow(friend) {
+	$('#chatWindow-' + friend).click(function() {
+		selectChatWindow(friend);
+	});
 }
 
 function populateChatContent(friend, socket) {
@@ -136,10 +162,15 @@ function highlightChatWindow(friend) {
 }
 
 function bindChatInput(friend, socket, friends) {
-	$('#chatInput-' + friend).bind('keyup', function(evt) {
+	$('#chatInput-' + friend).bind('keypress', function(evt) {
 		var code = evt.keyCode || evt.which;
 		if (code == 13) {
-			sendChatMessage(friend, socket, friends);
+			if (!evt.shiftKey) {
+				evt.preventDefault();
+				if ($('#chatInput-' + friend).val() != '') {
+					sendChatMessage(friend, socket, friends);
+				}
+			}
 		}
 	});
 }
