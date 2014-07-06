@@ -99,6 +99,10 @@ body{
 	font: 15px Arial, sans-serif;
 
 	border-bottom: 1px solid #ccc;
+	cursor: pointer;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 
 .friendLi {
@@ -127,11 +131,11 @@ body{
 }
 
 #searchBar {
-	width: 150px;
+	width: 130px;
 	height: 30px;
 
-	padding: 6px 5px;
-	margin: 3px;
+	padding: 6px 0;
+	margin: 3px 0;
 
 	border-width: 0px;
 	outline-width: 0px;
@@ -147,6 +151,11 @@ body{
 	vertical-align: middle;
 }
 
+#searchAdd {
+	margin: 4px 10px 0 0;
+
+	float: right;
+}
 
 /* ==============================================
    ================ CHATS =======================
@@ -200,10 +209,9 @@ body{
 	}
 
 	.closeChatWindow {
-		height: 23px;
+		height: 20px;
 		width: 23px;
 
-		margin-top: 0;
 		margin-right: 4px;
 
 		color: black;
@@ -215,7 +223,7 @@ body{
 	}
 
 	.closeChatWindow:hover, .closeChatWindow:active {
-		background-color: #CFCFCF;
+		background-color: #E6E6E6;
 	}
 
 
