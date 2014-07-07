@@ -45,6 +45,7 @@ module.exports = function(app, passport) {
 	// =====================================
 	// show the signup form
 	app.get('/signup', function(req, res) {
+		console.log(req);
 		if (req.isAuthenticated()) {
 			res.redirect('/');
 		} else {
@@ -59,7 +60,7 @@ module.exports = function(app, passport) {
 		failureRedirect : '/signup', // redirect back to the signup page if there is an error
 		failureFlash : true // allow flash messages
 	}));
-
+	
 	// =====================================
 	// LOGOUT ==============================
 	// =====================================

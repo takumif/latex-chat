@@ -111,7 +111,6 @@ module.exports = function(io) {
 function socketInit(io, socket) {
   User.findOne({ username : socket.request.user.username }, function(err, user) {
     user.sockets.push(socket.id);
-    console.log(user.sockets);
     User.findOneAndUpdate({ username : user.username }, {sockets : user.sockets}, function() {
       console.log('socket added to the list');
     });
