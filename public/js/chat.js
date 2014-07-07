@@ -67,7 +67,9 @@ $(function() {
 
 function documentInit() {
 	$(window).click(function() {
-		$('.selectedChatWindow').removeClass('selectedChatWindow');
+		if (nothingSelected()) {
+			$('.selectedChatWindow').removeClass('selectedChatWindow');
+		}
 	});
 }
 
@@ -134,14 +136,15 @@ function openChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 }
 
 function selectChatWindow(friend) {
-	console.log('selectChatWindow');
-	var w = $('#chatWindow-' + friend);
-	setTimeout(function() { // give time for the previous selection to disappear
-		if (!w.hasClass('selectedChatWindow')) {
-			w.addClass('selectedChatWindow');
-		}
-	}, 50);
-	w.find('textarea').focus();
+	if (nothingSelected()) {
+		var w = $('#chatWindow-' + friend);
+		setTimeout(function() { // give time for the previous selection to disappear
+			if (!w.hasClass('selectedChatWindow')) {
+				w.addClass('selectedChatWindow');
+			}
+		}, 50);
+		w.find('textarea').focus();
+	}
 }
 
 function bindChatWindow(friend) {
@@ -239,9 +242,15 @@ function chatMessage(from, time, content, friends) {
 	  '<div class="chatMessage">' + 
 	  '<div class="chatMessageSender">' + name + '</div>' +
 	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
-	  '<div class="chatMessageContent">' + content + '</div>' +
+	  '<div class="chatMessageContent">' + (content) + '</div>' +
 	  '</div>'
 	);
+}
+
+function stringToHTML(str) {
+	str = str.replace('\n', '<br />', 'g');
+	str = str.replace(/\s/g, '&nbsp;');
+	return str
 }
 
 function getFirstName(friends, username) {
@@ -261,6 +270,10 @@ function scrollChatToBottom(friend, animate) {
 	} else {
 		d.scrollTop(d.prop('scrollHeight'));
 	}
+}
+
+function nothingSelected() {
+	return (getSelection().toString() == '');
 }
 
 // ===================== SEARCH FUNCTION ==============================

@@ -63,7 +63,7 @@ module.exports = function(io) {
           { from : data.friend, to : user }
         ])
         .sort('-time') // sort by time, descending
-        .limit(10)
+        .limit(30)
         .find(function(err, messages) {
         socket.emit('receiveRecentMessages', {
           from : data.friend,

@@ -276,6 +276,7 @@ body{
 			margin-top: 2px;
 			font-size: 13px;
 			clear: both;
+			white-space: pre;
 		}
 
 /* ==============================================
