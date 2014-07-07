@@ -41,8 +41,16 @@ div + input[type='password'] {
 	color: #787878;
 }
 
+.sushi {
+	color: #89D42C;
+}
+
 .container {
 	margin-top: 45px;
+}
+
+#lastInput {
+	margin-bottom: 3px;
 }
 
 /* ==============================================
@@ -112,4 +120,12 @@ div + input[type='password'] {
 	float: right;
 	width: 49%;
 	margin-bottom: 7px;
+}
+
+.hook {
+	margin-top: 10%;
+	margin-right: 350px;
+
+	font: 36px Helvetica, sans-serif;
+	text-align: right;
 }
