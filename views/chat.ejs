@@ -10,12 +10,33 @@
   <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.3.min.js">
   </script>
   <script src="/socket.io/socket.io.js"></script>
+  <!-- configure MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'] ],
+        displayMath: [ ['$$','$$'] ],
+        processEscapes: true,
+      },
+      showProcessingMessages: false,
+      messageStyle: "none",
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+  <script src="/js/mathjax/MathJax.js"></script>
+
+  <!-- load Prism -->
+  <script src="/js/prism/prism.js"></script>
+  <link rel="stylesheet" type="text/css" href="/css/prism/prism.css">
+
   <script src="/js/chat.js"></script>
   <script src="/js/style.js"></script>
   <link rel="stylesheet" type="text/css" href="/css/stylesheet.css">
 </head>
 <body>
-  <div class="navbar"><p id="title">SushiOstrich</p>
+  <div class="navbar"><p id="title"><span class="sushi">sushi</span>Ostrich</code></p>
     <p id="userName"><%= user.firstName %> <%= user.lastName %></p>
     <a href="/settings"><img id="setIcon" src="/img/settings.png" alt="Account Settings"/></a>
     <a href="/logout"><img id="logoutIcon" src="/img/logout.png" alt="LogOut"></a>
