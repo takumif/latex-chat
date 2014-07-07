@@ -53,6 +53,12 @@ div + input[type='password'] {
 	margin-bottom: 3px;
 }
 
+.windowWrapper {
+	position: relative;
+	float: right;
+	margin-right: 135;
+	width: 300px;
+}
 /* ==============================================
    ================ LOGIN =======================
 */
@@ -99,7 +105,6 @@ div + input[type='password'] {
 	top: 50%;
 	width: 270px;
 
-	margin-left: 200px;
 	float: right;
 
 	font-size: 16px;
@@ -124,8 +129,12 @@ div + input[type='password'] {
 
 .hook {
 	margin-top: 10%;
-	margin-right: 350px;
+	margin-right: 0;
+
+	width: 450px;
+	float: left;
+	vertical-align: middle;
 
 	font: 36px Helvetica, sans-serif;
-	text-align: right;
+	text-align: center;
 }
