@@ -43,7 +43,7 @@ $(function() {
 			openChatWindow(data.from, socket, chattingWith, onlineFriends, friends);
 		}
 		highlightChatWindow(data.from);
-		formatElem($('#chatContent-' + data.from)[0]);
+		formatElem($('#chatContent-' + data.from));
 	});
 
 	// receiving messages to populate the newly-opened chat window with
@@ -53,7 +53,12 @@ $(function() {
 			for (var i = 0; i < data.messages.length; i++) {
 				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 			}
-			formatElem($('#chatContent-' + data.from)[0]);
+			formatElem($('#chatContent-' + data.from));
+			/*
+			setTimeout(function() {
+				scrollChatToBottom(data.from, false);
+			}, 500);
+*/
 		}
 	});
 
@@ -195,7 +200,7 @@ function sendChatMessage(friend, socket, friends) {
 	});
 	$('#chatInput-' + friend).val(null);
 	$('#chatContent-' + friend).append(chatMessage(user, time, content, friends));
-	formatElem($('#chatContent-' + friend)[0]);
+	formatElem($('#chatContent-' + friend));
 }
 
 function bindCloseChatWindow(chattingWith, friend) {
@@ -282,10 +287,14 @@ function getName(friends, username) {
 
 function scrollChatToBottom(friend, animate) {
 	var d = $('#chatContentWrapper-' + friend);
+	scrollToBottom(d, animate);
+}
+
+function scrollToBottom(elem, animate) {
 	if (animate) {
-		d.animate({ scrollTop : d.prop('scrollHeight') }, 300);
+		elem.animate({ scrollTop : elem.prop('scrollHeight') }, 300);
 	} else {
-		d.scrollTop(d.prop('scrollHeight'));
+		elem.scrollTop(elem.prop('scrollHeight'));
 	}
 }
 
@@ -309,7 +318,9 @@ function formatElem(elem) {
 }
 
 function runMathJax(elem) {
-	MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem]);
+	MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem[0]], function() {
+		scrollToBottom(elem.parent(), false);
+	});
 }
 
 
