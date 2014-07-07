@@ -9,7 +9,7 @@ body{
 	width: 100%;
 	height: 100%;
 
-	font-family: Arial, sans-serif;
+	font-family: Helvetica, sans-serif;
 	word-wrap: break-word;
 
 	color: #787878;
@@ -40,7 +40,7 @@ body{
 
 	background: #F5F5F5;
 
-	font: 17px Arial, sans-serif;
+	font: 17px Helvetica, sans-serif;
 	text-align: right;
 
 
@@ -71,7 +71,7 @@ body{
 	margin-top: 4px;
 
 	float: left;
-	font: 25px Arial, sans-serif;
+	font: 25px Helvetica, sans-serif;
 }
 
 /* ==============================================
@@ -96,7 +96,7 @@ body{
 	list-style: none;
 	margin: 0;
 
-	font: 15px Arial, sans-serif;
+	font: 15px Helvetica, sans-serif;
 
 	border-bottom: 1px solid #ccc;
 	cursor: pointer;
@@ -190,12 +190,12 @@ body{
 
 	margin: 0;
 	padding-left: 15px;
-	padding-top: 10px;
+	padding-top: 8px;
 
 	background-color: #F5F5F5;
 
 	text-align: left;
-	font: bold 16px Arial;
+	font: 18px Helvetica;
 
 	border-left: 3px solid #ccc;
 	border-bottom: 1px solid #DBDBDB;
@@ -218,7 +218,7 @@ body{
 		color: black;
 
 		float: right;;
-		font: 18px Arial, sans-serif;
+		font: 18px Helvetica, sans-serif;
 		text-align: center;
 		text-decoration: none;
 	}
@@ -261,7 +261,7 @@ body{
 		.chatMessageSender {
 			margin-left: 0;
 
-			font: bold 14px Arial, sans-serif;
+			font: bold 14px Helvetica, sans-serif;
 			float: left;
 		}
 
@@ -298,6 +298,6 @@ body{
 	resize : none;
 	border: none;
 
-	font: 13px Arial, sans-serif;
+	font: 13px Helvetica, sans-serif;
 	
 }
