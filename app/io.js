@@ -63,7 +63,7 @@ module.exports = function(io) {
           { from : data.friend, to : user }
         ])
         .sort('-time') // sort by time, descending
-        .limit(10)
+        .limit(30)
         .find(function(err, messages) {
         socket.emit('receiveRecentMessages', {
           from : data.friend,
@@ -73,11 +73,36 @@ module.exports = function(io) {
     });
 
     socket.on('searchInput', function(data) {
+      var friends = socket.request.user.friends;
+      var pending = socket.request.user.pending;
       User.findOne({ username : data.search }, function(err, user) {
+        var friend = (user != null && friends.indexOf(user.username) == -1 && pending.indexOf(user.username) == -1) ? {
+          username : user.username,
+          firstName : user.firstName,
+          lastName : user.lastName
+        } : null;
         socket.emit('searchResult', {
-          found : ((user != null) ? true : false)
+          friend : friend
         });
       });
+    });
+
+    socket.on('sendFriendRequest', function(data) {
+      var user = socket.request.user;
+      if (user.friends.indexOf(data.friend == -1) &&
+          user.pending.indexOf(data.friend == -1)) {
+        User.findOne({ username : data.friend }, function(err, friend) {
+          if (friend) {
+            user.pending.push(friend.username);
+            User.findOneAndUpdate({ username : user.username }, {pending : user.pending}, function() {
+              console.log('sending friend request');
+            });
+            for (var i = 0; i < friend.sockets.length; i++) {
+              io.to(friend.sockets[i]).emit('receiveFriendRequest', { friend : userNames(user) });
+            }
+          }
+        });
+      }
     });
 
 	});
@@ -86,7 +111,6 @@ module.exports = function(io) {
 function socketInit(io, socket) {
   User.findOne({ username : socket.request.user.username }, function(err, user) {
     user.sockets.push(socket.id);
-    console.log(user.sockets);
     User.findOneAndUpdate({ username : user.username }, {sockets : user.sockets}, function() {
       console.log('socket added to the list');
     });
@@ -135,3 +159,12 @@ function chatInit(socket) {
   }
 
 }
+
+function userNames(user) {
+  return {
+    username : user.username,
+    firstName : user.firstName,
+    lastName : user.lastName
+  };
+}
+

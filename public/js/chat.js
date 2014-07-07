@@ -2,6 +2,7 @@ $(function() {
 	var chattingWith = [];
 	var onlineFriends = [];
 	var friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
+	pending = [];
 
 	var socket = io.connect('http://localhost:8080');
 
@@ -28,6 +29,8 @@ $(function() {
 				var friend = $(this).attr('id').slice(9);
 				if (chattingWith.indexOf(friend) == -1) { // if not already chatting
 					openChatWindow(friend, socket, chattingWith, onlineFriends, friends);
+				} else {
+					selectChatWindow(friend);
 				}
 			});
 		}
@@ -63,11 +66,17 @@ $(function() {
 	socket.on('userOnline', function(data) {
 		makeFriendOnline(data.user, onlineFriends, chattingWith);
 	});
+
+	socket.on('receiveFriendRequest', function(data) {
+		receiveFriendRequest(data.friend);
+	});
 });
 
 function documentInit() {
 	$(window).click(function() {
-		$('.selectedChatWindow').removeClass('selectedChatWindow');
+		if (noTextSelected()) {
+			$('.selectedChatWindow').removeClass('selectedChatWindow');
+		}
 	});
 }
 
@@ -134,14 +143,15 @@ function openChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 }
 
 function selectChatWindow(friend) {
-	console.log('selectChatWindow');
-	var w = $('#chatWindow-' + friend);
-	setTimeout(function() { // give time for the previous selection to disappear
-		if (!w.hasClass('selectedChatWindow')) {
-			w.addClass('selectedChatWindow');
-		}
-	}, 50);
-	w.find('textarea').focus();
+	if (noTextSelected()) {
+		var w = $('#chatWindow-' + friend);
+		setTimeout(function() { // give time for the previous selection to disappear
+			if (!w.hasClass('selectedChatWindow')) {
+				w.addClass('selectedChatWindow');
+			}
+		}, 50);
+		w.find('textarea').focus();
+	}
 }
 
 function bindChatWindow(friend) {
@@ -239,9 +249,23 @@ function chatMessage(from, time, content, friends) {
 	  '<div class="chatMessage">' + 
 	  '<div class="chatMessageSender">' + name + '</div>' +
 	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
-	  '<div class="chatMessageContent">' + content + '</div>' +
+	  '<div class="chatMessageContent">' + escapeHtml(content) + '</div>' +
 	  '</div>'
 	);
+}
+
+function escapeHtml(string) {
+	 var entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': '&quot;',
+    "'": '&#39;',
+    "/": '&#x2F;'
+  };
+  return String(string).replace(/[&<>"'\/]/g, function (s) {
+    return entityMap[s];
+  });
 }
 
 function getFirstName(friends, username) {
@@ -261,6 +285,10 @@ function scrollChatToBottom(friend, animate) {
 	} else {
 		d.scrollTop(d.prop('scrollHeight'));
 	}
+}
+
+function noTextSelected() {
+	return (getSelection().toString() == '');
 }
 
 // ===================== SEARCH FUNCTION ==============================
@@ -283,8 +311,9 @@ function searchInit(socket) {
 	});
 
 	socket.on('searchResult', function(data) {
-		if (data.found) {
+		if (data.friend) {
 			$('#searchResult').html('<img id="searchAdd" src="/img/add.png">');
+			$('#searchAdd').click(function() { addFriend(data.friend, socket) });
 		} else {
 		  $('#searchResult').html('');
 		}
@@ -297,5 +326,22 @@ function doneTypingSearch(socket) {
 	  socket.emit('searchInput', { search : $('#searchBar').val() });
 	}
 }
+
+function addFriend(friend, socket) {
+	if (pending.indexOf(friend.username) == -1) {
+		pending.push(friend.username);
+		var li = friendListItem(friend, false);
+		li = li.replace('class="', 'class="pendingFriendLi ');
+		$('.friendListUl').append(li);
+		socket.emit('sendFriendRequest', { friend : friend.username });
+	}
+}
+
+function receiveFriendRequest (friend) {
+	var li = friendListItem(friend, false);
+	li = li.replace('class="', 'class="pendingRequestFriendLi ');
+	$('.friendListUl').append(li);
+}
+
 
 

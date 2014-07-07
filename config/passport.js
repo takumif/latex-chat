@@ -40,16 +40,18 @@ module.exports = function(passport) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, email, password, done) {
-        /*
         
         if (req.body.firstName == '' ||
             req.body.lastName == '' ||
             req.body.username == '' ||
-            req.body.email == '' ||
-            req.password == '') {
+            email == '' ||
+            password == '') {
             return done(null, false, req.flash('signupMessage', 'Fields cannot be empty.'));
         }
-        */
+
+        if (!validEmail(email)) {
+            return done(null, false, req.flash('signupMessage', 'Please enter a valid email address.'));
+        }
 
 		// find a user whose email is the same as the forms email
 		// we are checking to see if the user trying to login already exists
@@ -61,6 +63,11 @@ module.exports = function(passport) {
             // check to see if theres already a user with that email
             if (user) {
                 return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
+            } else {
+
+        User.findOne({ 'username' : req.body.username }, function(err, user) {
+            if (user) {
+                return done(null, false, req.flash('signupMessage', 'That username is already taken.'));
             } else {
 
 				// if there is no user with that email
@@ -81,7 +88,8 @@ module.exports = function(passport) {
                     return done(null, newUser);
                 });
             }
-
+        });
+            }
         });
 
     }));
@@ -122,3 +130,8 @@ module.exports = function(passport) {
     }));
 
 };
+
+function validEmail(email) { 
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+} 
