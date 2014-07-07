@@ -73,11 +73,36 @@ module.exports = function(io) {
     });
 
     socket.on('searchInput', function(data) {
+      var friends = socket.request.user.friends;
+      var pending = socket.request.user.pending;
       User.findOne({ username : data.search }, function(err, user) {
+        var friend = (user != null && friends.indexOf(user.username) == -1 && pending.indexOf(user.username) == -1) ? {
+          username : user.username,
+          firstName : user.firstName,
+          lastName : user.lastName
+        } : null;
         socket.emit('searchResult', {
-          found : ((user != null) ? true : false)
+          friend : friend
         });
       });
+    });
+
+    socket.on('sendFriendRequest', function(data) {
+      var user = socket.request.user;
+      if (user.friends.indexOf(data.friend == -1) &&
+          user.pending.indexOf(data.friend == -1)) {
+        User.findOne({ username : data.friend }, function(err, friend) {
+          if (friend) {
+            user.pending.push(friend.username);
+            User.findOneAndUpdate({ username : user.username }, {pending : user.pending}, function() {
+              console.log('sending friend request');
+            });
+            for (var i = 0; i < friend.sockets.length; i++) {
+              io.to(friend.sockets[i]).emit('receiveFriendRequest', { friend : userNames(user) });
+            }
+          }
+        });
+      }
     });
 
 	});
@@ -135,3 +160,12 @@ function chatInit(socket) {
   }
 
 }
+
+function userNames(user) {
+  return {
+    username : user.username,
+    firstName : user.firstName,
+    lastName : user.lastName
+  };
+}
+
