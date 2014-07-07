@@ -1,0 +1,51 @@
+<!-- views/index.ejs -->
+<!doctype html>
+<html>
+<head>
+	<title>sushiOstrich</title>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+	<link rel="stylesheet" href="/css/indexStylesheet.css">
+</head>
+<body>
+<div class="topbar"><p id="title">SushiOstrich</p></div>
+<div class="container">
+	<!-- LOGIN FORM -->
+	<div class="login">Login
+		<form action="/login" method="post">
+			<div class="form-group">
+				<input type="email" class="form-control" name="email" required placeholder='Email'>
+			</div>
+			<div class="form-group" id="lastinput">
+				<input type="password" class="form-control" name="password" required placeholder='Password'>
+			</div>
+
+			<button type="submit" class="btn btn-lg" id='subBut'>Login</button>
+		</form>
+	</div>
+
+	<!-- SIGNUP FORM -->
+	<div class="signup">Signup
+			<form action="/signup" method="post">
+		<div class="form-group">
+
+			<input type="text" id="firstName" class="form-control" name="firstName" required placeholder="First Name">
+		</div>
+		<div class="form-group">
+			<input type="text" id="lastName" class="form-control" name="lastName" required placeholder="Last Name">
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control" name="username" required placeholder="Username">
+		</div>
+		<div class="form-group">
+			<input type="email" class="form-control" name="email" required placeholder="Email">
+		</div>
+		<div class="form-group" id="lastinput">
+			<input type="password" class="form-control" name="password" required placeholder="Password">
+		</div>
+
+		<button type="submit" id='subBut' class="btn btn-warning btn-lg">Signup</button>
+	</form>
+</div>
+</body>
+</html>

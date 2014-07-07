@@ -302,6 +302,15 @@ function noTextSelected() {
 	return (getSelection().toString() == '');
 }
 
+function chatContentAtBottom(friend) {
+	var d = $('#chatContent-' + friend);
+	console.log(d.scrollTop());
+	console.log(d.height());
+   if (d.scrollTop() + d.height() == $(document).height()) {
+       console.log("bottom!");
+   }
+}
+
 // ============================ MATHJAX AND PRISM ==============================
 
 function codify(string) {
