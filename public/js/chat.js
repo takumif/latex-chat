@@ -43,7 +43,7 @@ $(function() {
 			openChatWindow(data.from, socket, chattingWith, onlineFriends, friends);
 		}
 		highlightChatWindow(data.from);
-		runMathJax($('#chatContent-' + data.from)[0]);
+		formatElem($('#chatContent-' + data.from)[0]);
 	});
 
 	// receiving messages to populate the newly-opened chat window with
@@ -53,7 +53,7 @@ $(function() {
 			for (var i = 0; i < data.messages.length; i++) {
 				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 			}
-			runMathJax($('#chatContent-' + data.from)[0]);
+			formatElem($('#chatContent-' + data.from)[0]);
 		}
 	});
 
@@ -195,7 +195,7 @@ function sendChatMessage(friend, socket, friends) {
 	});
 	$('#chatInput-' + friend).val(null);
 	$('#chatContent-' + friend).append(chatMessage(user, time, content, friends));
-	runMathJax($('#chatContent-' + friend)[0]);
+	formatElem($('#chatContent-' + friend)[0]);
 }
 
 function bindCloseChatWindow(chattingWith, friend) {
@@ -250,7 +250,7 @@ function chatMessage(from, time, content, friends) {
 	  '<div class="chatMessage">' + 
 	  '<div class="chatMessageSender">' + name + '</div>' +
 	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
-	  '<div class="chatMessageContent">' + escapeHtml(content) + '</div>' +
+	  '<div class="chatMessageContent">' + codify(escapeHtml(content)) + '</div>' +
 	  '</div>'
 	);
 }
@@ -268,6 +268,7 @@ function escapeHtml(string) {
     return entityMap[s];
   });
 }
+
 
 function getFirstName(friends, username) {
 	var f = friends.filter(function(obj) { return obj.username == username })[0];
@@ -292,7 +293,20 @@ function noTextSelected() {
 	return (getSelection().toString() == '');
 }
 
-// ============================ MATHJAX ==============================
+// ============================ MATHJAX AND PRISM ==============================
+
+function codify(string) {
+	while ((string.match(/##/g) || []).length >= 2) {
+		string = string.replace('##', '<code class="language-java">');
+		string = string.replace('##', '</code>');
+	}
+	return string;
+}
+
+function formatElem(elem) {
+	Prism.highlightAll();
+	runMathJax(elem);
+}
 
 function runMathJax(elem) {
 	MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem]);
