@@ -1,0 +1,111 @@
+html {
+	height: 100%;
+}
+/* Override default round brackets */
+input[type='text'],
+input[type='email'],
+input[type='password'] {
+	border-radius: 0px;
+}
+
+.topbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+
+	height: 30px;
+	width: 100%;
+
+	margin: auto;
+	padding: 5px 30px 10px 15px;
+
+	background: #F5F5F5;
+
+	box-shadow: 0px 1px #ccd0bd;
+	text-align: right;
+
+	-webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+}
+
+#title{
+	margin-top: 4px;
+
+	float: left;
+	font: 25px Helvetica, sans-serif;
+	color: #787878;
+}
+
+.container {
+	margin-top: 45px;
+}
+
+/* ==============================================
+   ================ LOGIN =======================
+*/
+
+.login {
+	margin: 2% 0;
+	float: right;
+	width: 35%;
+
+	font-size: 16px;
+	background: #F5F5F5;
+
+	padding: 2px 10px 4px 10px;
+
+	border: 2px solid #ccc;
+}
+	.form-group {
+		margin: 8px 0;
+	}
+
+	#subBut {
+		height: 34px;
+
+		float: right;
+		padding: 0 7px;
+		margin-top: 0 15px 2px;
+
+		background-color: #d1d1d1;
+		color: black;
+
+		border-radius: 0px;
+		border: 1px solid #bfbfbf;
+
+		font-family: "Helvetica Neue", Helvetica, sans-serif;
+		font-size: 16px;
+		text-align: middle;
+	}
+
+/* ==============================================
+   ================ SIGNUP =======================
+*/
+
+.signup {
+	top: 50%;
+
+	margin: 2% 0;
+	width: 35%;
+	float: right;
+
+	font-size: 16px;
+	background: #F5F5F5;
+
+	padding: 2px 10px 4px 5px;
+
+	border: 2px solid #ccc;
+}
+
+#firstName {
+	float: left;
+	width: 48%;
+	margin-bottom: 7px;
+}
+
+#lastName {
+	float: right;
+	margin-right: 0px;
+	width: 49%
+}

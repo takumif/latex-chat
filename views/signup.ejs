@@ -5,6 +5,7 @@
 	<title>Node Authentication</title>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+	<link rel="stylesheet" href="/css/signupStylesheet.css"
 	<style>
 		body 		{ padding-top:80px; }
 	</style>
@@ -22,11 +23,11 @@
 	<% } %>
 
 	<form action="/signup" method="post">
-		<div class="form-group">
+		<div class="form-group" id="firstName">
 			<label>First name</label>
 			<input type="text" class="form-control" name="firstName" required>
 		</div>
-		<div class="form-group">
+		<div class="form-group" id="lastName">
 			<label>Last name</label>
 			<input type="text" class="form-control" name="lastName" required>
 		</div>
@@ -43,7 +44,7 @@
 			<input type="password" class="form-control" name="password" required>
 		</div>
 
-		<button type="submit" class="btn btn-warning btn-lg">Signup</button>
+		<button type="submit" id='signupBut' class="btn btn-lg">Signup</button>
 	</form>
 
 	<hr>

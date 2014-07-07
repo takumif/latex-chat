@@ -1,0 +1,31 @@
+body {
+	color: #787878;
+}
+
+#firstName {
+	float: left;
+	width: 49%
+}
+
+#lastName {
+	float: right;
+	width: 49%;
+	margin-left: 5px;
+}
+
+.form-control {
+	border-radius: 0px;
+}
+
+#signupBut {
+	padding: 0 7px;
+	height: 34px;
+	background-color: #d1d1d1;
+	color: #787878;
+	border-radius: 0px;
+	border: 1px solid #bfbfbf;
+
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+	font-size: 16px;
+	text-align: middle;
+}
