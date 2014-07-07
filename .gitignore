@@ -18,5 +18,6 @@ config/database.js
 config/secret.js
 
 node_modules
+public/mathjax
 
 .DS_Store

@@ -43,7 +43,7 @@ $(function() {
 			openChatWindow(data.from, socket, chattingWith, onlineFriends, friends);
 		}
 		highlightChatWindow(data.from);
-		scrollChatToBottom(data.from, true);
+		runMathJax($('#chatContent-' + data.from)[0]);
 	});
 
 	// receiving messages to populate the newly-opened chat window with
@@ -53,7 +53,7 @@ $(function() {
 			for (var i = 0; i < data.messages.length; i++) {
 				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 			}
-			scrollChatToBottom(data.from, false);
+			runMathJax($('#chatContent-' + data.from)[0]);
 		}
 	});
 
@@ -195,6 +195,7 @@ function sendChatMessage(friend, socket, friends) {
 	});
 	$('#chatInput-' + friend).val(null);
 	$('#chatContent-' + friend).append(chatMessage(user, time, content, friends));
+	runMathJax($('#chatContent-' + friend)[0]);
 }
 
 function bindCloseChatWindow(chattingWith, friend) {
@@ -290,6 +291,13 @@ function scrollChatToBottom(friend, animate) {
 function noTextSelected() {
 	return (getSelection().toString() == '');
 }
+
+// ============================ MATHJAX ==============================
+
+function runMathJax(elem) {
+	MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem]);
+}
+
 
 // ===================== SEARCH FUNCTION ==============================
 

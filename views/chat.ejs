@@ -10,6 +10,21 @@
   <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.3.min.js">
   </script>
   <script src="/socket.io/socket.io.js"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'] ],
+        displayMath: [ ['$$','$$'] ],
+        processEscapes: true,
+      },
+      showProcessingMessages: false,
+      messageStyle: "none",
+      "HTML-CSS": { availableFonts: ["TeX"] }
+    });
+  </script>
+  <script src="mathjax/MathJax.js"></script>
   <script src="/js/chat.js"></script>
   <script src="/js/style.js"></script>
   <link rel="stylesheet" type="text/css" href="/css/stylesheet.css">
