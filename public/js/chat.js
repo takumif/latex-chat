@@ -1,12 +1,11 @@
 $(function() {
-	var chattingWith = [];
+	chattingWith = [];
 	var onlineFriends = [];
 	var friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
 
-	var socket = io.connect('http://localhost:8080');
+	socket = io.connect('http://localhost:8080');
 
-	searchInit(socket);
 	documentInit();
 
 	socket.on('initFriends', function(data) {
@@ -83,6 +82,10 @@ function documentInit() {
 			$('.selectedChatWindow').removeClass('selectedChatWindow');
 		}
 	});
+
+	organizeChatWindows();
+
+	searchInit(socket);
 }
 
 function makeFriendOffline(friend, onlineFriends, chattingWith) {
@@ -142,9 +145,10 @@ function openChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 	if (onlineFriends.indexOf(friend) > -1) {
 		makeChatWindowOnline(friend);
 	}
-	resizeChatContentWrapper();
+	resizeChatContentWrapper(); // in js/style.js
 	selectChatWindow(friend);
 	bindChatWindow(friend);
+	refreshChatHidden();
 }
 
 function selectChatWindow(friend) {
@@ -205,10 +209,15 @@ function sendChatMessage(friend, socket, friends) {
 
 function bindCloseChatWindow(chattingWith, friend) {
 	$('#closeChatWindow-' + friend).click(function(evt){
-		$(this).closest('.chatWindow').remove();
-		chattingWith.splice(chattingWith.indexOf(friend), 1);
+		closeChatWindow(chattingWith, friend);
 		evt.preventDefault(); 
 	});
+}
+
+function closeChatWindow(chattingWith, friend) {
+	$('#chatWindow-' + friend).remove();
+	chattingWith.splice(chattingWith.indexOf(friend), 1);
+	refreshChatHidden();
 }
 
 function friendListItem(friend, online) {
@@ -309,6 +318,51 @@ function chatContentAtBottom(friend) {
    if (d.scrollTop() + d.height() == $(document).height()) {
        console.log("bottom!");
    }
+}
+
+// ========================== ORGANIZING CHAT WINDOWS ==========================
+
+function organizeChatWindows() { // called from js/style.js
+	var oldWTD = (typeof(windowsToDisplay) == 'undefined') ? 0 : windowsToDisplay;
+  windowsToDisplay = toInt(($(window).width() - 290) / 320) || 1; // global :P
+  if (oldWTD != windowsToDisplay) refreshChatHidden();
+}
+
+function refreshChatHidden() {
+	for (var i = 0; i < chattingWith.length; i++) {
+		if (i < windowsToDisplay) {
+			// display the window
+			$('#chatWindow-' + chattingWith[i]).removeClass('chatWindowHidden');
+		} else {
+			$('#chatWindow-' + chattingWith[i]).addClass('chatWindowHidden');
+		}
+	}
+	refreshMinimized();
+}
+
+function refreshMinimized() {
+	if (chattingWith.length <= windowsToDisplay) {
+		$('.minimized').css('display', 'none');
+	} else {
+		$('.minimized').css('display', 'block');
+		var ul = $('.minimizedWindowList');
+		ul.empty();
+		for (var i = 0; i < chattingWith.length - windowsToDisplay; i++) {
+			console.log('li');
+			ul.append(minimizedWindow(chattingWith[windowsToDisplay + i]));
+		}
+	}
+}
+
+function minimizedWindow(friend) {
+	return (
+	  '<li class="minimizedWindow" id="minimizedWindow-' + friend + '">' +
+	  friend + '</li>'
+	);
+}
+
+function toInt(i) {
+  return ~~(i);
 }
 
 // ============================ MATHJAX AND PRISM ==============================

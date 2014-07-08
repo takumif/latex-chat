@@ -45,8 +45,21 @@ div + input[type='password'] {
 	color: #89D42C;
 }
 
-.container {
-	margin-top: 45px;
+.contents {
+	margin: auto;
+	margin-top: 85px;
+	padding: 0 20px;
+	width: 900px;
+}
+
+.hook {
+
+	width: 550px;
+	float: left;
+	vertical-align: middle;
+
+	font: 36px Helvetica, sans-serif;
+	text-align: center;
 }
 
 #lastInput {
@@ -127,14 +140,3 @@ div + input[type='password'] {
 	margin-bottom: 7px;
 }
 
-.hook {
-	margin-top: 10%;
-	margin-right: 0;
-
-	width: 450px;
-	float: left;
-	vertical-align: middle;
-
-	font: 36px Helvetica, sans-serif;
-	text-align: center;
-}

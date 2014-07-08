@@ -1,6 +1,7 @@
 $(function() {
   $(window).resize(function(evt) {
     resizeChatContentWrapper();
+    organizeChatWindows();
   })
 });
 
