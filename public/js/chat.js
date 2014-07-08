@@ -286,6 +286,7 @@ function closeChatWindow(chattingWith, friend) {
 	$('#minimizedWindowLi-' + friend).remove();
 	chattingWith.splice(chattingWith.indexOf(friend), 1);
 	refreshChatHidden();
+	saveOpenChats();
 }
 
 function friendListItem(friend, online) {
@@ -463,6 +464,10 @@ function isOnline(friend) {
 	return (onlineFriends.indexOf(friend) != -1);
 }
 
+function saveOpenChats() {
+	socket.emit('saveOpenChats', { openChats : chattingWith });
+}
+
 // ========================== ORGANIZING CHAT WINDOWS ==========================
 
 function openChatWindow(friend) {
@@ -480,6 +485,7 @@ function openChatWindow(friend) {
 		refreshChatHidden();
 	}
 	selectChatWindow(friend);
+	saveOpenChats();
 }
 
 function organizeChatWindows() { // called from js/style.js
@@ -489,8 +495,6 @@ function organizeChatWindows() { // called from js/style.js
 }
 
 function refreshChatHidden() {
-	// socket.emit('saveOpenChats', { openChats : chattingWith });
-
 	for (var i = 0; i < chattingWith.length; i++) {
 		if (i < windowsToDisplay) {
 			// display the window
