@@ -557,7 +557,7 @@ function toInt(i) {
 
 function codify(string) {
 	while ((string.match(/##/g) || []).length >= 2) {
-		string = string.replace('##', '<code class="language-java">');
+		string = string.replace('##', '<code class="language-javascript">');
 		string = string.replace('##', '</code>');
 	}
 	return string;
