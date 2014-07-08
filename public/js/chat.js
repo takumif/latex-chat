@@ -404,7 +404,7 @@ function chatMessage(from, time, content, friends) {
 	  '<div class="chatMessage">' + 
 	  '<div class="chatMessageSender">' + name + '</div>' +
 	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
-	  '<div class="chatMessageContent">' + codify(escapeHtml(content)) + '</div>' +
+	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 	  '</div>'
 	);
 }
@@ -416,9 +416,10 @@ function escapeHtml(string) {
     ">": "&gt;",
     '"': '&quot;',
     "'": '&#39;',
-    "/": '&#x2F;'
+    // "/": '&#x2F;'
   };
-  return String(string).replace(/[&<>"'\/]/g, function (s) {
+  return String(string).replace(/[&<>"']/g, function (s) {
+  // return String(string).replace(/[&<>"'\/]/g, function (s) {
     return entityMap[s];
   });
 }
