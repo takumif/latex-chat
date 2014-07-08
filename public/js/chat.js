@@ -38,6 +38,14 @@ $(function() {
 				}
 			});
 		}
+		
+		if (data.chattingWith) {
+			chattingWith = data.chattingWith;
+			for (var i = 0; i < chattingWith.length; i++) {
+				createChatWindow(chattingWith[i], socket, chattingWith, onlineFriends, friends);
+			}
+			refreshChatHidden();
+		}
 	});
 
 	socket.on('receiveMessage', function(data) {
@@ -150,11 +158,14 @@ function makeFriendListItemOnline(friend, onlineFriends) {
 }
 
 function openNewChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
-	$('.chats').append(chatWindow(friend, friends));
 	chattingWith.push(friend);
-
+	$('.chats').append(chatWindow(friend, friends));
 	openChatWindow(friend); // order the chats, refreshChatHidden
 
+	initChatWindow(friend, socket, chattingWith, onlineFriends, friends);
+}
+
+function initChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 	socket.emit('talkTo', {
 		friend : friend
 	});
@@ -166,6 +177,11 @@ function openNewChatWindow(friend, socket, chattingWith, onlineFriends, friends)
 	}
 	resizeChatContentWrapper(); // in js/style.js
 	bindChatWindow(friend);
+}
+
+function createChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
+	$('.chats').append(chatWindow(friend, friends));
+  initChatWindow(friend, socket, chattingWith, onlineFriends, friends);
 }
 
 function selectChatWindow(friend) {
@@ -473,6 +489,8 @@ function organizeChatWindows() { // called from js/style.js
 }
 
 function refreshChatHidden() {
+	// socket.emit('saveOpenChats', { openChats : chattingWith });
+
 	for (var i = 0; i < chattingWith.length; i++) {
 		if (i < windowsToDisplay) {
 			// display the window

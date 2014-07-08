@@ -105,6 +105,18 @@ module.exports = function(io) {
       }
     });
 
+    socket.on('saveOpenChats', function(data) {
+      console.log('saveOpenChats');
+      var openChats = [];
+      var user = socket.request.user;
+      for (var i = 0; i < data.openChats.length; i++) {
+        if (user.friends.indexOf(data.openChats[i]) != -1) {
+          openChats.push(data.openChats[i]);
+        }
+      }
+      User.findOneAndUpdate({ username : user.username }, { openChats : openChats }, function() {
+      });
+    });
 	});
 }
 
@@ -151,7 +163,8 @@ function chatInit(socket) {
           console.log('emitting initFriends');
           socket.emit('initFriends', {
             friends : friends,
-            onlineFriends : onlineFriends
+            onlineFriends : onlineFriends,
+            chattingWith : socket.request.user.openChats
           });
         }
       });
