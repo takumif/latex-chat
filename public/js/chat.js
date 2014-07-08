@@ -214,7 +214,8 @@ function sendChatMessage(friend, socket, friends) {
 }
 
 function bindCloseChatWindow(chattingWith, friend) {
-	$('#closeChatWindow-' + friend).click(function(evt){
+	$('.closeChatWindow-' + friend).unbind();
+	$('.closeChatWindow-' + friend).click(function(evt){
 		closeChatWindow(chattingWith, friend);
 		evt.preventDefault(); 
 	});
@@ -252,7 +253,7 @@ function chatWindow(friend, friends) {
 }
 
 function closeChatWindowButton(friend) {
-	return ('<div class="closeChatWindow" id="closeChatWindow-' +
+	return ('<div class="closeChatWindow closeChatWindow-' +
 	  friend + '">x</div>');
 }
 
