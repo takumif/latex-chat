@@ -3,6 +3,7 @@ $(function() {
 	onlineFriends = [];
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
+	sentMsgs = {};
 
 	socket = io.connect('http://localhost:8080');
 
@@ -14,6 +15,10 @@ $(function() {
 		}
 		if (data.friends) {
 			friends = data.friends;
+
+			for (var i = 0; i < friends.length; i++) {
+			  sentMsgs[friends[i].username] = { 'msgs': [''], 'index': 0 };
+			}
 			
 			for (var i = 0; i < friends.length; i++) {
 				if (onlineFriends.indexOf(friends[i].username) > -1) {
@@ -53,11 +58,6 @@ $(function() {
 				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 			}
 			formatElem($('#chatContent-' + data.from));
-			/*
-			setTimeout(function() {
-				scrollChatToBottom(data.from, false);
-			}, 500);
-*/
 		}
 	});
 
@@ -74,6 +74,17 @@ $(function() {
 	socket.on('receiveFriendRequest', function(data) {
 		receiveFriendRequest(data.friend);
 	});
+});
+
+$.fn.extend({
+  insertAtCursor: function(value) {
+    var cursorPos = getCursorPos(this[0]);
+	  this.val(
+	    this.val().substring(0, cursorPos) + 
+	    value + 
+	    this.val().substring(cursorPos, this.val().length)
+	  );
+	}
 });
 
 function documentInit() {
@@ -173,6 +184,7 @@ function bindChatWindow(friend) {
 	$('#chatWindow-' + friend).click(function() {
 		selectChatWindow(friend);
 	});
+	bindChatInputButtons(friend);
 }
 
 function populateChatContent(friend, socket) {
@@ -187,17 +199,44 @@ function highlightChatWindow(friend) {
 }
 
 function bindChatInput(friend, socket, friends) {
-	$('#chatInput-' + friend).bind('keypress', function(evt) {
+	$('#chatInput-' + friend).bind('keydown', function(evt) {
 		var code = evt.keyCode || evt.which;
-		if (code == 13) {
+		var f = sentMsgs[friend];
+		if (code == 13) { // enter key
 			if (!evt.shiftKey) {
 				evt.preventDefault();
-				if ($('#chatInput-' + friend).val() != '') {
+				if ($(this).val() != '') {
 					sendChatMessage(friend, socket, friends);
+					f.index = 0;
 				}
 			}
+		} else if (code == 38 && evt.shiftKey) { // up arrow
+			evt.preventDefault();
+			chatPrevMsg(friend);
+		} else if (code == 40 && evt.shiftKey) { // down arrow key
+			evt.preventDefault();
+			chatNextMsg(friend);
 		}
 	});
+}
+
+function chatPrevMsg(friend) {
+	var f = sentMsgs[friend];
+	if (f.index < f.msgs.length - 1) {
+		if (f.index == 0) {
+			f.msgs[f.msgs.length - 1] = $('#chatInput-' + friend).val();
+		}
+		$('#chatInput-' + friend).val(f.msgs[f.msgs.length - f.index - 2]);
+		f.index++;
+	}
+}
+
+function chatNextMsg(friend) {
+	var f = sentMsgs[friend];
+	if (f.index > 0) {
+		f.index--;
+		$('#chatInput-' + friend).val(f.msgs[f.msgs.length - f.index - 1]);
+	}
 }
 
 function sendChatMessage(friend, socket, friends) {
@@ -211,6 +250,11 @@ function sendChatMessage(friend, socket, friends) {
 	$('#chatInput-' + friend).val(null);
 	$('#chatContent-' + friend).append(chatMessage(user, time, content, friends));
 	formatElem($('#chatContent-' + friend));
+
+	// add the input to the list of sent messages
+	var msgs = sentMsgs[friend].msgs;
+	msgs[msgs.length - 1] = content;
+	msgs.push('');
 }
 
 function bindCloseChatWindow(chattingWith, friend) {
@@ -239,16 +283,82 @@ function friendListItem(friend, online) {
 
 function chatWindow(friend, friends) {
 	var name = getName(friend);
-	return (
-    '<div class="chatWindow" id="chatWindow-' + friend + '">' +
+	var code = '<div class="chatWindow" id="chatWindow-' + friend + '">' +
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
     closeChatWindowButton(friend) + '</div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
     '<div class="chatInputDiv">' +
-    '<textarea cols="39" rows="5" class="chatInput" id="chatInput-' + friend +
-		'" placeholder="Message..."/></div></div>'
-	);
+    '<textarea cols="39" rows="4" class="chatInput" id="chatInput-' + friend +
+		'" placeholder="Message..."/></div>' + chatInputButtons(friend) + '</div>';
+
+	return code;
+}
+
+function chatInputButtons(friend) {
+	var code = '<div class="chatButtonsDiv">' +
+		'<span class="chatLatexButton" id="chatLatexButton-' + friend + '">Insert $\LaTeX$</span>' +
+		'<span class="chatCodeButton" id="chatCodeButton-' + friend + '">Insert <code>code</code></span>' +
+		'<span class="chatPrevButton" id="chatPrevButton-' + friend + '">Prev</span>' +
+		'<span class="chatNextButton" id="chatNextButton-' + friend + '">Next</span>' +
+		'</div>';
+	return code;
+}
+
+function bindChatInputButtons(friend) {
+	runMathJax($('#chatLatexButton-' + friend));
+	$('#chatLatexButton-' + friend).click(function(evt) {
+		$('#chatInput-' + friend).insertAtCursor('$$');
+		moveChatInputCursor(friend, 1);
+	});
+	$('#chatCodeButton-' + friend).click(function(evt) {
+		$('#chatInput-' + friend).insertAtCursor('####');
+		moveChatInputCursor(friend, 2);
+	});
+	$('#chatPrevButton-' + friend).click(function() {
+		chatPrevMsg(friend);
+	});
+	$('#chatNextButton-' + friend).click(function() {
+		chatNextMsg(friend);
+	});
+}
+
+function moveChatInputCursor(friend, diff) {
+	moveInputCursor($('#chatInput-' + friend)[0], diff);
+}
+
+function getCursorPos(el) {
+  if (el.selectionStart) { 
+    return el.selectionStart; 
+  } else if (document.selection) { 
+    el.focus(); 
+
+    var r = document.selection.createRange(); 
+    if (r != null) {
+      var re = el.createTextRange(), 
+        rc = re.duplicate(); 
+      re.moveToBookmark(r.getBookmark()); 
+      rc.setEndPoint('EndToStart', re); 
+
+      return rc.text.length; 
+    }
+  }
+  return 0;
+}
+
+function moveInputCursor(el, diff) {
+	var cur_pos = getCursorPos(el);
+
+  if (el.setSelectionRange) {
+    el.focus();
+    el.setSelectionRange(cur_pos + diff, cur_pos + diff);
+  } else if (el.createTextRange) {
+    var range = el.createTextRange();
+    range.collapse(true);
+    range.moveEnd('character', cur_pos + diff);
+    range.moveStart('character', cur_pos + diff);
+    range.select();
+  }
 }
 
 function closeChatWindowButton(friend) {
