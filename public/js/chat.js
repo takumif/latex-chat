@@ -363,7 +363,7 @@ function moveInputCursor(el, diff) {
 
 function closeChatWindowButton(friend) {
 	return ('<div class="closeChatWindow closeChatWindow-' +
-	  friend + '">x</div>');
+	  friend + '">X</div>');
 }
 
 function formatTime(time) {
@@ -508,7 +508,7 @@ function minimizedWindow(friend) {
 	  '<li class="minimizedWindowLi' + onlineClass + '" id="minimizedWindowLi-' +
 	  friend + '"><span class="minimizedWindow" id="minimizedWindowLi-' + friend +
 	  '" username="' + friend + '">' + getName(friend) +
-	  '</span>' + closeChatWindowButton(friend) + '</li>'
+	  '</span>' + closeChatWindowButton(friend) +'</li>'
 	);
 }
 
