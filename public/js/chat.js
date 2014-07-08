@@ -27,9 +27,9 @@ $(function() {
 			$('.friendLi').click(function() { // open chat window with the friend
 				var friend = $(this).attr('id').slice(9);
 				if (chattingWith.indexOf(friend) == -1) { // if not already chatting
-					openChatWindow(friend, socket, chattingWith, onlineFriends, friends);
+					openNewChatWindow(friend, socket, chattingWith, onlineFriends, friends);
 				} else {
-					selectChatWindow(friend);
+					openChatWindow(friend);
 				}
 			});
 		}
@@ -39,7 +39,7 @@ $(function() {
 		if (chattingWith.indexOf(data.from) > -1) { // chat window already open
 			$('#chatContent-' + data.from).append(chatMessage(data.from, data.time, data.content, friends));
 		} else { // chat window not open, so open it
-			openChatWindow(data.from, socket, chattingWith, onlineFriends, friends);
+			openNewChatWindow(data.from, socket, chattingWith, onlineFriends, friends);
 		}
 		highlightChatWindow(data.from);
 		formatElem($('#chatContent-' + data.from));
@@ -77,9 +77,14 @@ $(function() {
 });
 
 function documentInit() {
-	$(window).click(function() {
+	$(window).click(function(evt) {
 		if (noTextSelected()) {
 			$('.selectedChatWindow').removeClass('selectedChatWindow');
+			if (evt.target == $('.minimizedToggle')[0]) {
+				toggleMinimizedList();
+			} else {
+				hideMinimizedList();
+			}
 		}
 	});
 
@@ -133,22 +138,23 @@ function makeFriendListItemOnline(friend, onlineFriends) {
 	$('.friendListUl').prepend($('#friendLi-' + friend));
 }
 
-function openChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
+function openNewChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 	$('.chats').append(chatWindow(friend, friends));
+	chattingWith.push(friend);
+
+	openChatWindow(friend); // order the chats, refreshChatHidden
+
 	socket.emit('talkTo', {
 		friend : friend
 	});
 	populateChatContent(friend, socket);
 	bindChatInput(friend, socket, friends);
 	bindCloseChatWindow(chattingWith, friend);
-	chattingWith.push(friend);
 	if (onlineFriends.indexOf(friend) > -1) {
 		makeChatWindowOnline(friend);
 	}
 	resizeChatContentWrapper(); // in js/style.js
-	selectChatWindow(friend);
 	bindChatWindow(friend);
-	refreshChatHidden();
 }
 
 function selectChatWindow(friend) {
@@ -215,7 +221,9 @@ function bindCloseChatWindow(chattingWith, friend) {
 }
 
 function closeChatWindow(chattingWith, friend) {
+	console.log('closeChatWindow');
 	$('#chatWindow-' + friend).remove();
+	$('#minimizedWindowLi-' + friend).remove();
 	chattingWith.splice(chattingWith.indexOf(friend), 1);
 	refreshChatHidden();
 }
@@ -234,8 +242,7 @@ function chatWindow(friend, friends) {
 	return (
     '<div class="chatWindow" id="chatWindow-' + friend + '">' +
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
-    '<a href="" class="closeChatWindow" id="closeChatWindow-' + friend +
-    '">x</a></div>' +
+    closeChatWindowButton(friend) + '</div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
     '<div class="chatInputDiv">' +
@@ -243,6 +250,12 @@ function chatWindow(friend, friends) {
 		'" placeholder="Message..."/></div></div>'
 	);
 }
+
+function closeChatWindowButton(friend) {
+	return ('<div class="closeChatWindow" id="closeChatWindow-' +
+	  friend + '">x</div>');
+}
+
 function formatTime(time) {
 	var months=["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 	var day = time.getDate(),
@@ -322,6 +335,23 @@ function chatContentAtBottom(friend) {
 
 // ========================== ORGANIZING CHAT WINDOWS ==========================
 
+function openChatWindow(friend) {
+	// friend is already in the list of chattingWith
+	var pos = chattingWith.indexOf(friend);
+
+	if (pos >= windowsToDisplay) {
+		$('#chatWindow-' + friend).insertBefore(
+		  $('#chatWindow-' + chattingWith[windowsToDisplay - 1])
+		);
+		chattingWith.splice(pos, 1);
+		chattingWith.splice(windowsToDisplay - 1, 0, friend);
+		console.log(chattingWith);
+
+		refreshChatHidden();
+	}
+	selectChatWindow(friend);
+}
+
 function organizeChatWindows() { // called from js/style.js
 	var oldWTD = (typeof(windowsToDisplay) == 'undefined') ? 0 : windowsToDisplay;
   windowsToDisplay = toInt(($(window).width() - 290) / 320) || 1; // global :P
@@ -349,16 +379,36 @@ function refreshMinimized() {
 		ul.empty();
 		for (var i = 0; i < chattingWith.length - windowsToDisplay; i++) {
 			console.log('li');
-			ul.append(minimizedWindow(chattingWith[windowsToDisplay + i]));
+			var friend = chattingWith[windowsToDisplay + i];
+			ul.append(minimizedWindow(friend));
+			bindCloseChatWindow(chattingWith, friend);
 		}
+		bindMinimizedWindow();
 	}
 }
 
 function minimizedWindow(friend) {
 	return (
-	  '<li class="minimizedWindow" id="minimizedWindow-' + friend + '">' +
-	  friend + '</li>'
+	  '<li class="minimizedWindowLi" id="minimizedWindowLi-' + friend +
+	  '"><span class="minimizedWindow" id="minimizedWindowLi-' + friend +
+	  '" username="' + friend + '">' + friend +
+	  '</span>' + closeChatWindowButton(friend) + '</li>'
 	);
+}
+
+function bindMinimizedWindow() {
+	$('.minimizedWindow').click(function() {
+		openChatWindow($(this).attr('username'));
+	});
+}
+
+function toggleMinimizedList() {
+	var ul = $('.minimizedWindowList');
+	ul.css('display', (ul.css('display') == 'block') ? 'none' : 'block');
+}
+
+function hideMinimizedList() {
+	$('.minimizedWindowList').css('display', 'none');
 }
 
 function toInt(i) {
@@ -433,7 +483,7 @@ function addFriend(friend, socket) {
 	}
 }
 
-function receiveFriendRequest (friend) {
+function receiveFriendRequest(friend) {
 	var li = friendListItem(friend, false);
 	li = li.replace('class="', 'class="pendingRequestFriendLi ');
 	$('.friendListUl').append(li);
