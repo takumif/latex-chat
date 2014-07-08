@@ -1,7 +1,7 @@
 $(function() {
 	chattingWith = [];
-	var onlineFriends = [];
-	var friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
+	onlineFriends = [];
+	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
 
 	socket = io.connect('http://localhost:8080');
@@ -214,9 +214,8 @@ function sendChatMessage(friend, socket, friends) {
 }
 
 function bindCloseChatWindow(chattingWith, friend) {
-	$('#closeChatWindow-' + friend).click(function(evt){
+	$('.closeChatWindow-' + friend).click(function(){
 		closeChatWindow(chattingWith, friend);
-		evt.preventDefault(); 
 	});
 }
 
@@ -238,7 +237,7 @@ function friendListItem(friend, online) {
 }
 
 function chatWindow(friend, friends) {
-	var name = getName(friends, friend);
+	var name = getName(friend);
 	return (
     '<div class="chatWindow" id="chatWindow-' + friend + '">' +
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
@@ -252,7 +251,7 @@ function chatWindow(friend, friends) {
 }
 
 function closeChatWindowButton(friend) {
-	return ('<div class="closeChatWindow" id="closeChatWindow-' +
+	return ('<div class="closeChatWindow closeChatWindow-' +
 	  friend + '">x</div>');
 }
 
@@ -302,7 +301,7 @@ function getFirstName(friends, username) {
 	return f.firstName;
 }
 
-function getName(friends, username) {
+function getName(username) {
 	var f = friends.filter(function(obj) { return obj.username == username })[0];
 	return (f.firstName + ' ' + f.lastName);
 }
@@ -331,6 +330,10 @@ function chatContentAtBottom(friend) {
    if (d.scrollTop() + d.height() == $(document).height()) {
        console.log("bottom!");
    }
+}
+
+function isOnline(friend) {
+	return (onlineFriends.indexOf(friend) != -1);
 }
 
 // ========================== ORGANIZING CHAT WINDOWS ==========================
@@ -374,6 +377,7 @@ function refreshMinimized() {
 	if (chattingWith.length <= windowsToDisplay) {
 		$('.minimized').css('display', 'none');
 	} else {
+		$('.minimizedToggle').text(chattingWith.length - windowsToDisplay);
 		$('.minimized').css('display', 'block');
 		var ul = $('.minimizedWindowList');
 		ul.empty();
@@ -388,10 +392,11 @@ function refreshMinimized() {
 }
 
 function minimizedWindow(friend) {
+	var onlineClass = isOnline(friend) ? ' onlineFriendLi' : '';
 	return (
-	  '<li class="minimizedWindowLi" id="minimizedWindowLi-' + friend +
-	  '"><span class="minimizedWindow" id="minimizedWindowLi-' + friend +
-	  '" username="' + friend + '">' + friend +
+	  '<li class="minimizedWindowLi' + onlineClass + '" id="minimizedWindowLi-' +
+	  friend + '"><span class="minimizedWindow" id="minimizedWindowLi-' + friend +
+	  '" username="' + friend + '">' + getName(friend) +
 	  '</span>' + closeChatWindowButton(friend) + '</li>'
 	);
 }
