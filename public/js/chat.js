@@ -77,11 +77,9 @@ $(function() {
 	var oldTime = new Date(data.messages[index].time.toString()),
 		newTime = new Date(data.messages[index-1].time.toString());
 	if (newTime - oldTime > 30000) {
-		console.log('more than 5 min apart');
 		return true;
-	} else if (data.messages[index].from != data.messages[index+1].from) {
-		console.log('Different User sending Messages');
-		return true
+	} else if (data.messages[index].from != data.messages[index-1].from) {
+		return true 
 	}
 	return false;
 	}
