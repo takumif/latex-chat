@@ -329,13 +329,13 @@ function friendListItem(friend, online) {
 	console.log(typeof(friend));
 	if (typeof(friend) == 'string') {
 		return (
-		  '<li class="friendLi" id="friendLi-' + friend + '">' + 
+		  '<li class="friendLi clickable" id="friendLi-' + friend + '">' + 
 		  'placeholder' + '</li>'
 		);
 	}
 	var onlineClass = online ? ' onlineFriendLi' : '';
 	return (
-	  '<li class="friendLi' + onlineClass + '" id="friendLi-' + friend.username + '">' + 
+	  '<li class="friendLi clickable' + onlineClass + '" id="friendLi-' + friend.username + '">' + 
 	  friend.firstName + ' ' + friend.lastName + '</li>'
 	);
 }
@@ -574,12 +574,17 @@ function refreshMinimized() {
 }
 
 function minimizedWindow(friend) {
-	var onlineClass = isOnline(friend) ? ' onlineFriendLi' : '';
+	// var onlineClass = isOnline(friend) ? ' onlineFriendLi' : '';
 	return (
-	  '<li class="minimizedWindowLi' + onlineClass + '" id="minimizedWindowLi-' +
-	  friend + '"><span class="minimizedWindow" id="minimizedWindowLi-' + friend +
+//	  '<li class="minimizedWindowLi' /*+ onlineClass*/ + '" id="minimizedWindowLi-' +
+//	  friend + '"><div class="minimizedWindow" id="minimizedWindowLi-' + friend +
+//	  '" username="' + friend + '">' + getName(friend) +
+//	  '</div>' + closeChatWindowButton(friend) +'</li>'
+
+	  '<div class="minimizedWindowDiv' /*+ onlineClass*/ + '" id="minimizedWindowLi-' +
+	  friend + '"><div class="minimizedWindow clickable" id="minimizedWindowLi-' + friend +
 	  '" username="' + friend + '">' + getName(friend) +
-	  '</span>' + closeChatWindowButton(friend) +'</li>'
+	  '</div>' + closeChatWindowButton(friend) +'</li>'
 	);
 }
 
@@ -592,6 +597,9 @@ function bindMinimizedWindow() {
 function toggleMinimizedList() {
 	var ul = $('.minimizedWindowList');
 	ul.css('display', (ul.css('display') == 'block') ? 'none' : 'block');
+	/*$('.minimizedToggleOff').addClass('minimizedToggleOn').removeClass('minimizedToggleOff');
+	$('.minimizedToggleOn').addClass('minimizedToggleOff').removeClass('minimizedToggleOn');
+	*/
 }
 
 function hideMinimizedList() {

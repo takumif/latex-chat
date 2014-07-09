@@ -23,7 +23,20 @@ body{
   height : 100%;
 }
 
+.clickable {
+	cursor: pointer;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
 
+.clickable:hover {
+	background-color: #F5F5F5;
+}
+
+.clickable:active {
+	background-color: #E6E6E6;
+}
 /* ==============================================
    ================ NAVBAR =======================
 */
@@ -121,7 +134,7 @@ body{
 	
 	display: block;
 }
-
+/*
 .friendLi:hover {
 	background-color: #F5F5F5;
 }
@@ -129,7 +142,7 @@ body{
 .friendLi:active {
 	background-color: #E6E6E6;
 }
-
+*/
 .onlineFriendLi {
 	border-left: 3px solid #91E02F ;
 }
@@ -238,8 +251,12 @@ body{
 		-mox-box-sizing: border-box;
 	}
 
-	.closeChatWindow:hover, .closeChatWindow:active {
+	.closeChatWindow:hover {
 		background-color: #E6E6E6;
+	}
+
+	.closeChatWindow:active {
+		background-color: #ccc;
 	}
 
 
@@ -301,53 +318,78 @@ body{
 .minimized {
 	position: fixed;
 	bottom: 0px;
-	left: 10px;
+	left: 20px;
+	width: 100px;
 }
 
 .minimizedToggle {
-	padding-left: 2px;
-	border-left: 1px solid #ccc;
+	width: 10px;
+	background: white;
+	z-index: 2;
+	border: 1px solid #ccc;
+	padding: 5px 10px;
 }
+
+
+
+/*
+.minimizedToggleOn {
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+}
+
+.minimizedToggleOff {
+	padding: 5px 10px;
+	border: 1px solid #ccc;
+}
+*/
 .minimizedWindowList {
 
-	float:left;
-	width: 100px;
+	/*float:left;*/
+	width: 130px;
 
 	font-size: 13px;
 
-	vertical-align: bottom;
+	/*vertical-align: bottom;/
 	border-bottom: 1px solid #ccc;
 	border-right: 1px solid #ccc;
 	border-top: 1px solid #ccc;
 
-	margin: auto 10px 5px 20px;
-	padding-left: 10px;
+	/*margin: auto 10px 5px 20px;*/
+	/*padding-left: 10px;*/
 
 
-	display: block;
-	list-style: none;
+	/*display: block;*/
+	border: 1px solid #ccc;
+	position: absolute;
+	bottom: 29px;
+	background: white;
+	z-index: 1;
 }
 
-li .closeChatWindow {
-	float: right;
-	margin-right: 0;
+.minimizedWindowDiv .closeChatWindow {
+	float: left;
+	margin: 0;
 
-	height: 15px;
-	width: 15px;
-	padding-top: 2px;
+	height: 25px;
+	width: 20px;
+	padding-top: 5px;
 
 	font-size: 12px
 }
 
 .minimizedWindow {
 	text-align: left;
-	max-width: 83px;
+	width: 100px;
 	float: left;
-	margin: 2px 0;
+	margin: 0;
+	padding: 5px;
 
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	word-wrap: break-word;
 }
 
 /* ==============================================
