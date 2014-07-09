@@ -35,10 +35,6 @@ $(function() {
 		
 		if (data.chattingWith) {
 			chattingWith = data.chattingWith;
-			for (var i = 0; i < chattingWith.length; i++) {
-				createChatWindow(chattingWith[i], socket, chattingWith, onlineFriends, friends);
-			}
-			refreshChatHidden();
 		}
 
 		if (data.groups) {
@@ -53,6 +49,12 @@ $(function() {
 				}
 			}
 		}
+
+		for (var i = 0; i < chattingWith.length; i++) {
+			createChatWindow(chattingWith[i], socket, chattingWith, onlineFriends, friends);
+		}
+		refreshChatHidden();
+
 	});
 
 	socket.on('receiveMessage', function(data) {
@@ -619,7 +621,8 @@ function makeGroup(members) {
 }
 
 function isGroupChat(entity) {
-	return !friends.hasOwnProperty(entity);
+	console.log(friends);
+	return groups.hasOwnProperty(entity);
 }
 
 
