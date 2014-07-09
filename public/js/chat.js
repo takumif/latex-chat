@@ -358,10 +358,10 @@ function chatWindow(friend, friends) {
 
 function chatInputButtons(friend) {
 	var code = '<div class="chatButtonsDiv">' +
-		'<span class="chatLatexButton" id="chatLatexButton-' + friend + '">Insert $\LaTeX$</span>' +
-		'<span class="chatCodeButton" id="chatCodeButton-' + friend + '">Insert <code>code</code></span>' +
-		'<span class="chatPrevButton" id="chatPrevButton-' + friend + '">Prev</span>' +
-		'<span class="chatNextButton" id="chatNextButton-' + friend + '">Next</span>' +
+		'<span class="chatButton clickable chatLatexButton" id="chatLatexButton-' + friend + '">Insert $\LaTeX$</span>' +
+		'<span class="chatButton clickable chatCodeButton" id="chatCodeButton-' + friend + '">Insert <code>code</code></span>' +
+		'<span class="chatButton clickable chatPrevButton" id="chatPrevButton-' + friend + '">Prev</span>' +
+		'<span class="chatButton clickable chatNextButton" id="chatNextButton-' + friend + '">Next</span>' +
 		'</div>';
 	return code;
 }

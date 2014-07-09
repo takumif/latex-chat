@@ -312,6 +312,31 @@ body{
 		}
 
 /* ==============================================
+   ================ CHAT BUTTONS ================
+*/
+
+.chatButtonsDiv {
+	border-top: 1px solid #ccc;
+	padding: 3px 0;
+}
+
+.chatButton {
+	padding: 5px 11px;
+	font-size: 13px;
+}
+
+.chatLatexButton {
+	border-right: 1px solid #ccc;;
+}
+
+.chatCodeButton {
+	border-right: 1px solid #ccc;;
+}
+
+.chatPrevButton {
+	border-right: 1px solid #ccc;;
+}
+/* ==============================================
    ============== MINIMIZED CHATS ===============
 */
 
@@ -400,7 +425,7 @@ body{
 	position: relative;
 	bottom: 0;
 
-	padding: 5px 5px;
+	padding: 5px 5px 0 5px;
 
 	outline-width: 0;
 	border-top: 1px solid #DEDEDE;
