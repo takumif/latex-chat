@@ -100,6 +100,7 @@ module.exports = function(io) {
         [{ to : data.friend }] :
         [{ from : user, to : data.friend }, { from : data.friend, to : user }]
       );
+      console.log(conditions);
       Message.find()
         .or(conditions)
         .sort('-time') // sort by time, descending

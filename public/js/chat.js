@@ -27,25 +27,14 @@ $(function() {
 				}else {
 					$('.friendListUl').append(friendListItem(friends[i], false));
 				}
-				
+				bindFriendListItem(friends[i].username);
 			}
 
-			$('.friendLi').click(function() { // open chat window with the friend
-				var friend = $(this).attr('id').slice(9);
-				if (chattingWith.indexOf(friend) == -1) { // if not already chatting
-					openNewChatWindow(friend, socket, chattingWith, onlineFriends, friends);
-				} else {
-					openChatWindow(friend);
-				}
-			});
+
 		}
 		
 		if (data.chattingWith) {
 			chattingWith = data.chattingWith;
-			for (var i = 0; i < chattingWith.length; i++) {
-				createChatWindow(chattingWith[i], socket, chattingWith, onlineFriends, friends);
-			}
-			refreshChatHidden();
 		}
 
 		if (data.groups) {
@@ -56,9 +45,16 @@ $(function() {
 				if (groups.hasOwnProperty(group)) {
 					addToSentMsgs(group);
 					$('.friendListUl').append(friendListItem(group, false));
+					bindFriendListItem(group);
 				}
 			}
 		}
+
+		for (var i = 0; i < chattingWith.length; i++) {
+			createChatWindow(chattingWith[i], socket, chattingWith, onlineFriends, friends);
+		}
+		refreshChatHidden();
+
 	});
 
 	socket.on('receiveMessage', function(data) {
@@ -151,6 +147,18 @@ function documentInit() {
 	organizeChatWindows();
 
 	searchInit(socket);
+}
+
+function bindFriendListItem(friend) {
+
+	$('#friendLi-' + friend).click(function() { // open chat window with the friend
+		var friend = $(this).attr('id').slice(9);
+		if (chattingWith.indexOf(friend) == -1) { // if not already chatting
+			openNewChatWindow(friend, socket, chattingWith, onlineFriends, friends);
+		} else {
+			openChatWindow(friend);
+		}
+	});
 }
 
 function makeFriendOffline(friend, onlineFriends, chattingWith) {
@@ -342,13 +350,13 @@ function friendListItem(friend, online) {
 	console.log(typeof(friend));
 	if (typeof(friend) == 'string') {
 		return (
-		  '<li class="friendLi" id="friendLi-' + friend + '">' + 
+		  '<li class="friendLi clickable" id="friendLi-' + friend + '">' + 
 		  'placeholder' + '</li>'
 		);
 	}
 	var onlineClass = online ? ' onlineFriendLi' : '';
 	return (
-	  '<li class="friendLi' + onlineClass + '" id="friendLi-' + friend.username + '">' + 
+	  '<li class="friendLi clickable' + onlineClass + '" id="friendLi-' + friend.username + '">' + 
 	  friend.firstName + ' ' + friend.lastName + '</li>'
 	);
 }
@@ -369,10 +377,10 @@ function chatWindow(friend, friends) {
 
 function chatInputButtons(friend) {
 	var code = '<div class="chatButtonsDiv">' +
-		'<span class="chatLatexButton" id="chatLatexButton-' + friend + '">Insert $\LaTeX$</span>' +
-		'<span class="chatCodeButton" id="chatCodeButton-' + friend + '">Insert <code>code</code></span>' +
-		'<span class="chatPrevButton" id="chatPrevButton-' + friend + '">Prev</span>' +
-		'<span class="chatNextButton" id="chatNextButton-' + friend + '">Next</span>' +
+		'<span class="chatButton clickable chatLatexButton" id="chatLatexButton-' + friend + '">Insert $\LaTeX$</span>' +
+		'<span class="chatButton clickable chatCodeButton" id="chatCodeButton-' + friend + '">Insert <code>code</code></span>' +
+		'<span class="chatButton clickable chatPrevButton" id="chatPrevButton-' + friend + '">Prev</span>' +
+		'<span class="chatButton clickable chatNextButton" id="chatNextButton-' + friend + '">Next</span>' +
 		'</div>';
 	return code;
 }
@@ -599,12 +607,17 @@ function refreshMinimized() {
 }
 
 function minimizedWindow(friend) {
-	var onlineClass = isOnline(friend) ? ' onlineFriendLi' : '';
+	// var onlineClass = isOnline(friend) ? ' onlineFriendLi' : '';
 	return (
-	  '<li class="minimizedWindowLi' + onlineClass + '" id="minimizedWindowLi-' +
-	  friend + '"><span class="minimizedWindow" id="minimizedWindowLi-' + friend +
+//	  '<li class="minimizedWindowLi' /*+ onlineClass*/ + '" id="minimizedWindowLi-' +
+//	  friend + '"><div class="minimizedWindow" id="minimizedWindowLi-' + friend +
+//	  '" username="' + friend + '">' + getName(friend) +
+//	  '</div>' + closeChatWindowButton(friend) +'</li>'
+
+	  '<div class="minimizedWindowDiv' /*+ onlineClass*/ + '" id="minimizedWindowLi-' +
+	  friend + '"><div class="minimizedWindow clickable" id="minimizedWindowLi-' + friend +
 	  '" username="' + friend + '">' + getName(friend) +
-	  '</span>' + closeChatWindowButton(friend) +'</li>'
+	  '</div>' + closeChatWindowButton(friend) +'</li>'
 	);
 }
 
@@ -617,6 +630,9 @@ function bindMinimizedWindow() {
 function toggleMinimizedList() {
 	var ul = $('.minimizedWindowList');
 	ul.css('display', (ul.css('display') == 'block') ? 'none' : 'block');
+	/*$('.minimizedToggleOff').addClass('minimizedToggleOn').removeClass('minimizedToggleOff');
+	$('.minimizedToggleOn').addClass('minimizedToggleOff').removeClass('minimizedToggleOn');
+	*/
 }
 
 function hideMinimizedList() {
@@ -636,7 +652,8 @@ function makeGroup(members) {
 }
 
 function isGroupChat(entity) {
-	return !friends.hasOwnProperty(entity);
+	console.log(friends);
+	return groups.hasOwnProperty(entity);
 }
 
 

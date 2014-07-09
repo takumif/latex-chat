@@ -257,12 +257,18 @@ body{
 		background-color: #E6E6E6;
 	}
 
+<<<<<<< HEAD
+/* ================================
+   ========= CHATBODY =============
+ All Messages are here */
+=======
 	.closeChatWindow:active {
 		background-color: #ccc;
 	}
 
 
 /* All Messages are here */
+>>>>>>> e6fdbda112340e6b4f5a90f0e6f0e994f1d7c062
 .chatContentWrapper {
 	height: 100%;
 	overflow-y: scroll;
@@ -373,7 +379,11 @@ body{
 */
 .minimizedWindowList {
 
+<<<<<<< HEAD
+	float:left;
+=======
 	/*float:left;*/
+>>>>>>> e6fdbda112340e6b4f5a90f0e6f0e994f1d7c062
 	width: 130px;
 
 	font-size: 13px;
@@ -395,9 +405,27 @@ body{
 	z-index: 1;
 }
 
+<<<<<<< HEAD
+.minimizedWindow {
+	text-align: left;
+	min-width: 80px;
+	max-width: 100px;
+	float: left;
+	margin: 2px 0;
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+li .closeChatWindow {
+	float: right;
+	margin-right: 0;
+=======
 .minimizedWindowDiv .closeChatWindow {
 	float: left;
 	margin: 0;
+>>>>>>> e6fdbda112340e6b4f5a90f0e6f0e994f1d7c062
 
 	height: 25px;
 	width: 20px;
@@ -406,6 +434,8 @@ body{
 	font-size: 12px;
 }
 
+<<<<<<< HEAD
+=======
 .minimizedWindow {
 	text-align: left;
 	width: 100px;
@@ -418,6 +448,7 @@ body{
 	white-space: nowrap;
 	word-wrap: break-word;
 }
+>>>>>>> e6fdbda112340e6b4f5a90f0e6f0e994f1d7c062
 
 /* ==============================================
    ================ INPUT =======================
