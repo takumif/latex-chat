@@ -4,7 +4,7 @@ $(function() {
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
 	sentMsgs = {};
-	groups = {};
+	groups = {}; // { groupName : [user, friend1, friend2], .. }
 
 	socket = io.connect('http://localhost:8080');
 
@@ -18,7 +18,7 @@ $(function() {
 			friends = data.friends;
 
 			for (var i = 0; i < friends.length; i++) {
-			  sentMsgs[friends[i].username] = { 'msgs': [''], 'index': 0 };
+				addToSentMsgs(friends[i].username);
 			}
 			
 			for (var i = 0; i < friends.length; i++) {
@@ -50,6 +50,13 @@ $(function() {
 
 		if (data.groups) {
 			groups = data.groups;
+			
+			for (var group in groups) {
+				console.log(group);
+				if (groups.hasOwnProperty(group)) {
+					addToSentMsgs(group);
+				}
+			}
 		}
 	});
 
@@ -89,7 +96,11 @@ $(function() {
 	});
 
 	socket.on('madeGroup', function(data) {
-		
+		if (data.id && data.members) {
+			groups[data.id] = data.members;
+			openNewChatWindow(data.id, socket, chattingWith, onlineFriends, friends);
+			addToSentMsgs(data.id);
+		}
 	});
 });
 
@@ -278,12 +289,12 @@ function sendChatMessage(recipient, socket, friends) {
 		time : time,
 		isGroupMsg : isGroupMsg
 	});
-	$('#chatInput-' + friend).val(null);
-	$('#chatContent-' + friend).append(chatMessage(user, time, content, friends));
-	formatElem($('#chatContent-' + friend));
+	$('#chatInput-' + recipient).val(null);
+	$('#chatContent-' + recipient).append(chatMessage(user, time, content, friends));
+	formatElem($('#chatContent-' + recipient));
 
 	// add the input to the list of sent messages
-	var msgs = sentMsgs[friend].msgs;
+	var msgs = sentMsgs[recipient].msgs;
 	msgs[msgs.length - 1] = content;
 	msgs.push('');
 }
@@ -448,6 +459,7 @@ function getFirstName(friends, username) {
 
 function getName(username) {
 	var f = friends.filter(function(obj) { return obj.username == username })[0];
+	if (f == null) return 'placeholder';
 	return (f.firstName + ' ' + f.lastName);
 }
 
@@ -483,6 +495,10 @@ function isOnline(friend) {
 
 function saveOpenChats() {
 	socket.emit('saveOpenChats', { openChats : chattingWith });
+}
+
+function addToSentMsgs(recipient) {
+  sentMsgs[recipient] = { 'msgs': [''], 'index': 0 };
 }
 
 // ========================== ORGANIZING CHAT WINDOWS ==========================

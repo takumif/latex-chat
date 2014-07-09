@@ -145,7 +145,7 @@ module.exports = function(io) {
       var openChats = [];
       var user = socket.request.user;
       for (var i = 0; i < data.openChats.length; i++) {
-        if (user.friends.indexOf(data.openChats[i]) != -1) {
+        if (user.friends.indexOf(data.openChats[i]) != -1 || user.groups.indexOf(data.openChats[i]) != -1) {
           openChats.push(data.openChats[i]);
         }
       }
@@ -160,18 +160,20 @@ module.exports = function(io) {
       for (var i = 0; i < data.members.length; i++) {
         User.findOne({ username : data.members[i] }, function(err, friend) {
           members.push(friend.username);
-        });
+          if (members.length == data.members.length + 1) { // callback at the end of the forloop
+            var group = new Group();
+            group.idString = String(group.id);
+            group.members = members;
+            group.save(function() {
+              console.log('made group: ' + group.idString);
+              socket.emit('madeGroup', {
+                id : group.idString,
+                members : members
+              }); // end socket.emit('madeGroup')
+            }); // end group.save
+          }
+        }); // end User.findOne
       }
-      var group = new Group();
-      group.idString = String(group.id);
-      group.members = members;
-      group.save(function() {
-        console.log('made group: ' + group.idString);
-        socket.emit('madeGroup', {
-          id : group.idString,
-          members : members
-        }); // end socket.emit('madeGroup')
-      }); // end group.save
     }); // end socket.on('makeGroup')
 
 	}); // end socket.on('connection')
@@ -217,18 +219,17 @@ function chatInit(socket) {
 
         friends.push(friend);
         if (friends.length == friendsArray.length) {
-          var g = socket.request.user.groups;
           var groups = {};
-          for (var j = 0; j < g.length; j++) {
-            groups[g] = getMembersOfGroup(g[j]);
-          }
 
-          console.log('emitting initFriends');
-          socket.emit('initFriends', {
-            friends : friends,
-            onlineFriends : onlineFriends,
-            chattingWith : socket.request.user.openChats,
-            groups : groups
+          getMembersOfGroups(socket, groups, socket.request.user.groups, function() {
+            console.log('emitting initFriends');
+
+            socket.emit('initFriends', {
+              friends : friends,
+              onlineFriends : onlineFriends,
+              chattingWith : socket.request.user.openChats,
+              groups : groups
+            });
           });
         }
       });
@@ -237,19 +238,41 @@ function chatInit(socket) {
 
 }
 
-function registerMemberToGroup(group, members) {
+function registerMembersToGroup(group, members) {
   for (var i = 0; i < members.length; i++) {
-    User.findOne({ username : members[i] }, function(err, user) {
-      user.groups.push(group);
-      user.save();
-    });
+    registerMemberToGroup(group, members[i]);
   }
 }
 
-function getMembersOfGroup(groupID) {
-  Group.findOne({ idString : groupID }, function(err, group) {
-    return group.members;
+function registerMemberToGroup(group, member) {
+  Group.findOne({ idString : group }, function(err, g) {
+    if (g.members.indexOf(member) == -1) {
+      g.members.push(member);
+      g.save();
+    }
   });
+  User.findOne({ username : member }, function(err, user) {
+    if (user.groups.indexOf(group) == -1) {
+      user.groups.push(group);
+      user.save();
+    }
+  });
+}
+
+function getMembersOfGroups(socket, groups, groupIDs, callback) {
+  for (var i = 0; i < groupIDs.length; i++) {
+    var id = groupIDs[i];
+    Group.findOne({ idString : id }, function(err, group) {
+      if (group == null) {
+        console.log('group not found');
+      }
+      groups[id] = group.members;
+      if (groupIDs.indexOf(id) == groupIDs.length - 1) {
+        groups[id].splice(groups[id].indexOf(socket.request.user.username), 1); // get rid of user from the array
+        callback();
+      }
+    });
+  }
 }
 
 function userNames(user) {

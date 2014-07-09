@@ -305,7 +305,8 @@ body{
 }
 
 .minimizedToggle {
-	border: 1px solid #ccc;
+	padding-left: 2px;
+	border-left: 1px solid #ccc;
 }
 .minimizedWindowList {
 
@@ -315,9 +316,11 @@ body{
 	font-size: 13px;
 
 	vertical-align: bottom;
-	border: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
 
-	margin: auto 10px 5px 25px;
+	margin: auto 10px 5px 20px;
 	padding-left: 10px;
 
 
