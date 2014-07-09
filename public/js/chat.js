@@ -4,6 +4,7 @@ $(function() {
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
 	sentMsgs = {};
+	groups = {};
 
 	socket = io.connect('http://localhost:8080');
 
@@ -46,16 +47,20 @@ $(function() {
 			}
 			refreshChatHidden();
 		}
+
+		if (data.groups) {
+			groups = data.groups;
+		}
 	});
 
 	socket.on('receiveMessage', function(data) {
-		if (chattingWith.indexOf(data.from) > -1) { // chat window already open
-			$('#chatContent-' + data.from).append(chatMessage(data.from, data.time, data.content, friends));
+		if (chattingWith.indexOf(data.chat) > -1) { // chat window already open
+			$('#chatContent-' + data.chat).append(chatMessage(data.from, data.time, data.content, friends));
 		} else { // chat window not open, so open it
-			openNewChatWindow(data.from, socket, chattingWith, onlineFriends, friends);
+			openNewChatWindow(data.chat, socket, chattingWith, onlineFriends, friends);
 		}
-		highlightChatWindow(data.from);
-		formatElem($('#chatContent-' + data.from));
+		highlightChatWindow(data.chat);
+		formatElem($('#chatContent-' + data.chat));
 	});
 
 	// receiving messages to populate the newly-opened chat window with
@@ -81,6 +86,10 @@ $(function() {
 
 	socket.on('receiveFriendRequest', function(data) {
 		receiveFriendRequest(data.friend);
+	});
+
+	socket.on('madeGroup', function(data) {
+		
 	});
 });
 
@@ -258,13 +267,16 @@ function chatNextMsg(friend) {
 	}
 }
 
-function sendChatMessage(friend, socket, friends) {
-	var content = $('#chatInput-' + friend).val();
+function sendChatMessage(recipient, socket, friends) {
+	var content = $('#chatInput-' + recipient).val();
 	var time = new Date();
+	var isGroupMsg = false;
+	if (groups.hasOwnProperty(recipient)) isGroupMsg = true;
 	socket.emit('sendMessage', {
 		content : content,
-		friend : friend,
-		time : time
+		recipient : recipient,
+		time : time,
+		isGroupMsg : isGroupMsg
 	});
 	$('#chatInput-' + friend).val(null);
 	$('#chatContent-' + friend).append(chatMessage(user, time, content, friends));
@@ -557,6 +569,15 @@ function hideMinimizedList() {
 function toInt(i) {
   return ~~(i);
 }
+
+
+// ============================ GROUP CHAT ==============================
+
+function makeGroup(members) {
+	// save the group to the DB
+	socket.emit('makeGroup', { members : members });
+}
+
 
 // ============================ MATHJAX AND PRISM ==============================
 

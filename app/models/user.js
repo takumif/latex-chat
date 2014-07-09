@@ -15,7 +15,8 @@ var userSchema = mongoose.Schema({
     sockets        : [String],
     friends        : [String],
     pending        : [String],
-    openChats      : [String]
+    openChats      : [String],
+    groups         : [String],
 });
 
 // methods ======================

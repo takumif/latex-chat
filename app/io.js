@@ -1,5 +1,6 @@
-var Message = require('./models/message');
-var User = require('./models/user');
+var Message = require('./models/message'),
+    Group   = require('./models/group'),
+    User    = require('./models/user');
 
 module.exports = function(io) {
 
@@ -37,19 +38,53 @@ module.exports = function(io) {
     socket.on('sendMessage', function(data) {
       var newMessage = new Message();
       newMessage.from = socket.request.user.username;
-      newMessage.to = data.friend;
+      newMessage.to = data.recipient;
       newMessage.content = data.content;
       newMessage.time = data.time;
       newMessage.save(function(err, msg, numAffected) {
-        User.findOne({ username : data.friend }, function(err, friend) {
-          for (var i = 0; i < friend.sockets.length; i++) {
-            io.to(friend.sockets[i]).emit('receiveMessage', {
-              from : socket.request.user.username,
-              time : data.time,
-              content : data.content
-            });
-          }
-        });
+        if (data.isGroupMsg) {
+
+          Group.findOne({ idString : data.recipient }, function(err, group) {
+            // check if it's a new group
+            if (socket.request.user.groups.indexOf(data.recipient) == -1) {
+              // it is a new group
+              for (var i = 0; i < group.members.length; i++) {
+                registerMemberToGroup(group.idString, group.members[i]);
+              }
+            }
+
+            var recipients = [];
+            for (var i = 0; i < group.members.length; i++) {
+              User.findOne({ username : group.members[i] }, function(err, f) {
+                if (f != null) recipients.push(f);
+              });
+            }
+
+            for (var r = 0; r < recipients.length; r++) {
+              for (var i = 0; i < recipients[r].sockets.length; i++) {
+                io.to(recipients[r].sockets[i]).emit('receiveMessage', {
+                  from : socket.request.user.username,
+                  time : data.time,
+                  content : data.content,
+                  chat : data.recipient
+                });
+              }
+            }
+          });
+        } else {
+          User.findOne({ username : data.recipient }, function(err, friend) {
+            if (friend != null) {
+              for (var i = 0; i < friend.sockets.length; i++) {
+                io.to(friend.sockets[i]).emit('receiveMessage', {
+                  from : socket.request.user.username,
+                  time : data.time,
+                  content : data.content,
+                  chat : socket.request.user.username
+                });
+              }
+            }
+          });
+        }
       });
     });
 
@@ -117,7 +152,29 @@ module.exports = function(io) {
       User.findOneAndUpdate({ username : user.username }, { openChats : openChats }, function() {
       });
     });
-	});
+
+    socket.on('makeGroup', function(data) {
+      if (!data.members || typeof(data.members) != 'object') return false; // invalid socket emission
+
+      var members = [ socket.request.user.username ];
+      for (var i = 0; i < data.members.length; i++) {
+        User.findOne({ username : data.members[i] }, function(err, friend) {
+          members.push(friend.username);
+        });
+      }
+      var group = new Group();
+      group.idString = String(group.id);
+      group.members = members;
+      group.save(function() {
+        console.log('made group: ' + group.idString);
+        socket.emit('madeGroup', {
+          id : group.idString,
+          members : members
+        }); // end socket.emit('madeGroup')
+      }); // end group.save
+    }); // end socket.on('makeGroup')
+
+	}); // end socket.on('connection')
 }
 
 function socketInit(io, socket) {
@@ -160,17 +217,39 @@ function chatInit(socket) {
 
         friends.push(friend);
         if (friends.length == friendsArray.length) {
+          var g = socket.request.user.groups;
+          var groups = {};
+          for (var j = 0; j < g.length; j++) {
+            groups[g] = getMembersOfGroup(g[j]);
+          }
+
           console.log('emitting initFriends');
           socket.emit('initFriends', {
             friends : friends,
             onlineFriends : onlineFriends,
-            chattingWith : socket.request.user.openChats
+            chattingWith : socket.request.user.openChats,
+            groups : groups
           });
         }
       });
     }
   }
 
+}
+
+function registerMemberToGroup(group, members) {
+  for (var i = 0; i < members.length; i++) {
+    User.findOne({ username : members[i] }, function(err, user) {
+      user.groups.push(group);
+      user.save();
+    });
+  }
+}
+
+function getMembersOfGroup(groupID) {
+  Group.findOne({ idString : groupID }, function(err, group) {
+    return group.members;
+  });
 }
 
 function userNames(user) {
