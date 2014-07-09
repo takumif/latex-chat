@@ -27,17 +27,10 @@ $(function() {
 				}else {
 					$('.friendListUl').append(friendListItem(friends[i], false));
 				}
-				
+				bindFriendListItem(friends[i].username);
 			}
 
-			$('.friendLi').click(function() { // open chat window with the friend
-				var friend = $(this).attr('id').slice(9);
-				if (chattingWith.indexOf(friend) == -1) { // if not already chatting
-					openNewChatWindow(friend, socket, chattingWith, onlineFriends, friends);
-				} else {
-					openChatWindow(friend);
-				}
-			});
+
 		}
 		
 		if (data.chattingWith) {
@@ -56,6 +49,7 @@ $(function() {
 				if (groups.hasOwnProperty(group)) {
 					addToSentMsgs(group);
 					$('.friendListUl').append(friendListItem(group, false));
+					bindFriendListItem(group);
 				}
 			}
 		}
@@ -132,6 +126,18 @@ function documentInit() {
 	organizeChatWindows();
 
 	searchInit(socket);
+}
+
+function bindFriendListItem(friend) {
+
+	$('#friendLi-' + friend).click(function() { // open chat window with the friend
+		var friend = $(this).attr('id').slice(9);
+		if (chattingWith.indexOf(friend) == -1) { // if not already chatting
+			openNewChatWindow(friend, socket, chattingWith, onlineFriends, friends);
+		} else {
+			openChatWindow(friend);
+		}
+	});
 }
 
 function makeFriendOffline(friend, onlineFriends, chattingWith) {
