@@ -232,6 +232,9 @@ function bindChatInput(friend, socket, friends) {
 		} else if (code == 40 && evt.shiftKey) { // down arrow key
 			evt.preventDefault();
 			chatNextMsg(friend);
+		} else if (code == 9) { // tab
+			evt.preventDefault();
+			$(this).insertAtCursor('  ');
 		}
 	});
 }
@@ -416,9 +419,10 @@ function escapeHtml(string) {
     ">": "&gt;",
     '"': '&quot;',
     "'": '&#39;',
+    "\t": '  '
     // "/": '&#x2F;'
   };
-  return String(string).replace(/[&<>"']/g, function (s) {
+  return String(string).replace(/[&<>"'\t]/g, function (s) {
   // return String(string).replace(/[&<>"'\/]/g, function (s) {
     return entityMap[s];
   });
