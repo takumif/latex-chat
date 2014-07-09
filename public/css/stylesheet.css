@@ -191,7 +191,9 @@ body{
 	display: none;
 }
 
-/* Containg name + Close window */
+/* ================================
+   ======== CHATHEADER ============
+ Containg name + Close window */
 .chatHeader {
 	height: 35px;
 	width: 300px;
@@ -242,8 +244,9 @@ body{
 		background-color: #E6E6E6;
 	}
 
-
-/* All Messages are here */
+/* ================================
+   ========= CHATBODY =============
+ All Messages are here */
 .chatContentWrapper {
 	height: 100%;
 	overflow-y: scroll;
@@ -311,7 +314,7 @@ body{
 .minimizedWindowList {
 
 	float:left;
-	width: 100px;
+	width: 130px;
 
 	font-size: 13px;
 
@@ -328,6 +331,18 @@ body{
 	list-style: none;
 }
 
+.minimizedWindow {
+	text-align: left;
+	min-width: 80px;
+	max-width: 100px;
+	float: left;
+	margin: 2px 0;
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 li .closeChatWindow {
 	float: right;
 	margin-right: 0;
@@ -339,16 +354,6 @@ li .closeChatWindow {
 	font-size: 12px
 }
 
-.minimizedWindow {
-	text-align: left;
-	max-width: 83px;
-	float: left;
-	margin: 2px 0;
-
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
 
 /* ==============================================
    ================ INPUT =======================
