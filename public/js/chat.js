@@ -16,7 +16,15 @@ $(function() {
 		}
 		if (data.friends) {
 			friends = data.friends;
+		}
+		if (data.chattingWith) {
+			chattingWith = data.chattingWith;
+		}
+		if (data.groups) {
+			groups = data.groups;
+		}
 
+		if (data.friends) {
 			for (var i = 0; i < friends.length; i++) {
 				addToSentMsgs(friends[i].username);
 			}
@@ -33,13 +41,7 @@ $(function() {
 
 		}
 		
-		if (data.chattingWith) {
-			chattingWith = data.chattingWith;
-		}
-
 		if (data.groups) {
-			groups = data.groups;
-
 			for (var group in groups) {
 				console.log(group);
 				if (groups.hasOwnProperty(group)) {
@@ -347,6 +349,9 @@ function chatWindow(friend, friends) {
 	var code = '<div class="chatWindow" id="chatWindow-' + friend + '">' +
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
     closeChatWindowButton(friend) + '</div>' +
+    '<div class="chatAddToGroup" id="chatAddToGroup-' + friend + '">' +
+    '<input class="ChatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" />' +
+    '</div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
     '<div class="chatInputDiv">' +
@@ -358,8 +363,8 @@ function chatWindow(friend, friends) {
 
 function chatInputButtons(friend) {
 	var code = '<div class="chatButtonsDiv">' +
-		'<span class="chatButton clickable chatLatexButton" id="chatLatexButton-' + friend + '">Insert $\LaTeX$</span>' +
-		'<span class="chatButton clickable chatCodeButton" id="chatCodeButton-' + friend + '">Insert <code>code</code></span>' +
+		'<span class="chatButton clickable chatLatexButton" id="chatLatexButton-' + friend + '">Insert LaTeX</span>' +
+		'<span class="chatButton clickable chatCodeButton" id="chatCodeButton-' + friend + '">Insert code</span>' +
 		'<span class="chatButton clickable chatPrevButton" id="chatPrevButton-' + friend + '">Prev</span>' +
 		'<span class="chatButton clickable chatNextButton" id="chatNextButton-' + friend + '">Next</span>' +
 		'</div>';

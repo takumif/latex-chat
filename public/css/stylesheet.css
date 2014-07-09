@@ -321,12 +321,13 @@ body{
 }
 
 .chatButton {
-	padding: 5px 11px;
+	padding: 5px 13px;
 	font-size: 13px;
 }
 
 .chatLatexButton {
 	border-right: 1px solid #ccc;;
+	padding-left: 12px;
 }
 
 .chatCodeButton {
