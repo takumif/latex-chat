@@ -76,7 +76,7 @@ $(function() {
 	var index = index || 1;
 	var oldTime = new Date(data.messages[index].time.toString()),
 		newTime = new Date(data.messages[index-1].time.toString());
-	if (newTime - oldTime > 30000) {
+	if ((newTime - oldTime) > 30000) {
 		return true;
 	} else if (data.messages[index].from != data.messages[index-1].from) {
 		return true 
@@ -94,7 +94,7 @@ $(function() {
 					chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 				} else {
 					console.log('shouldn"t display Username')
-					chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
+					chatContent.prepend(chatMessageWithoutName(data.messages[i].time, data.messages[i].content, friends));
 				}
 			}
 			formatElem($('#chatContent-' + data.from));
@@ -462,6 +462,18 @@ function chatMessage(from, time, content, friends) {
 	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 	  '</div>'
 	);
+}
+
+function chatMessageWithoutName(time, content, friends) {
+	if (typeof time == 'string') {
+		time = new Date(time);
+	}
+	return (
+	  '<div class="chatMessage" id="noName">' +
+	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
+	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
+	  '</div>'
+	 );
 }
 
 function escapeHtml(string) {
