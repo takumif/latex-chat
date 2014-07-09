@@ -57,18 +57,22 @@ module.exports = function(io) {
             for (var i = 0; i < group.members.length; i++) {
               User.findOne({ username : group.members[i] }, function(err, f) {
                 if (f != null) recipients.push(f);
-              });
-            }
 
-            for (var r = 0; r < recipients.length; r++) {
-              for (var i = 0; i < recipients[r].sockets.length; i++) {
-                io.to(recipients[r].sockets[i]).emit('receiveMessage', {
-                  from : socket.request.user.username,
-                  time : data.time,
-                  content : data.content,
-                  chat : data.recipient
-                });
-              }
+                if (recipients.length == group.members.length) {
+                  for (var r = 0; r < recipients.length; r++) {
+                    if (recipients[r].username != socket.request.user.username) {
+                      for (var s = 0; s < recipients[r].sockets.length; s++) {
+                        io.to(recipients[r].sockets[s]).emit('receiveMessage', {
+                          from : socket.request.user.username,
+                          time : data.time,
+                          content : data.content,
+                          chat : data.recipient
+                        });
+                      }
+                    }
+                  }
+                }
+              });
             }
           });
         } else {
@@ -90,13 +94,14 @@ module.exports = function(io) {
 
     // user has opened a chat window with data.friend, send 10 recent msgs
     socket.on('requireRecentMessages', function(data) {
-      console.log('requireRecentMessages called');
+      console.log('requireRecentMessages called. isGroupChat: ' + data.isGroupChat);
       var user = socket.request.user.username;
+      var conditions = (data.isGroupChat ?
+        [{ to : data.friend }] :
+        [{ from : user, to : data.friend }, { from : data.friend, to : user }]
+      );
       Message.find()
-        .or([
-          { from : user, to : data.friend },
-          { from : data.friend, to : user }
-        ])
+        .or(conditions)
         .sort('-time') // sort by time, descending
         .limit(30)
         .find(function(err, messages) {

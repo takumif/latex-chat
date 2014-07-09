@@ -50,7 +50,7 @@ $(function() {
 
 		if (data.groups) {
 			groups = data.groups;
-			
+
 			for (var group in groups) {
 				console.log(group);
 				if (groups.hasOwnProperty(group)) {
@@ -61,6 +61,7 @@ $(function() {
 	});
 
 	socket.on('receiveMessage', function(data) {
+		console.log('received a message');
 		if (chattingWith.indexOf(data.chat) > -1) { // chat window already open
 			$('#chatContent-' + data.chat).append(chatMessage(data.from, data.time, data.content, friends));
 		} else { // chat window not open, so open it
@@ -225,7 +226,8 @@ function bindChatWindow(friend) {
 
 function populateChatContent(friend, socket) {
 	socket.emit('requireRecentMessages', {
-		friend : friend
+		friend : friend,
+		isGroupChat : isGroupChat(friend)
 	});
 }
 
@@ -592,6 +594,10 @@ function toInt(i) {
 function makeGroup(members) {
 	// save the group to the DB
 	socket.emit('makeGroup', { members : members });
+}
+
+function isGroupChat(entity) {
+	return !friends.hasOwnProperty(entity);
 }
 
 
