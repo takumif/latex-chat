@@ -55,6 +55,7 @@ $(function() {
 				console.log(group);
 				if (groups.hasOwnProperty(group)) {
 					addToSentMsgs(group);
+					$('.friendListUl').append(friendListItem(group, false));
 				}
 			}
 		}
@@ -319,6 +320,13 @@ function closeChatWindow(chattingWith, friend) {
 
 function friendListItem(friend, online) {
 	// friend = { username: '', firstName: '', lastName: ''}
+	console.log(typeof(friend));
+	if (typeof(friend) == 'string') {
+		return (
+		  '<li class="friendLi" id="friendLi-' + friend + '">' + 
+		  'placeholder' + '</li>'
+		);
+	}
 	var onlineClass = online ? ' onlineFriendLi' : '';
 	return (
 	  '<li class="friendLi' + onlineClass + '" id="friendLi-' + friend.username + '">' + 
