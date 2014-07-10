@@ -450,3 +450,20 @@ body{
 .bootstrap-tagsinput .tag {
 	color: #787878;
 }
+
+.tt-dropdown-menu {
+	background-color: white;
+	width: 300px;
+	cursor: pointer;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+
+.tt-dropdown-menu:hover {
+	background-color: #F5F5F5;
+}
+
+.tt-dropdown-menu:active {
+	background-color: #E6E6E6;
+}

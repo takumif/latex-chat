@@ -636,7 +636,7 @@ function initAddToGroupInput(id) {
 
 	// constructs the suggestion engine
 	var states = new Bloodhound({
-	  datumTokenizer: function (d) { return Bloodhound.tokenizers.whitespace(d.firstName + ' ' + d.lastName) },
+	  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('username'),
 	  queryTokenizer: Bloodhound.tokenizers.whitespace,
 	  // `states` is an array of state names defined in "The Basics"
 	  local: friends
@@ -647,7 +647,7 @@ function initAddToGroupInput(id) {
 
 	$('#chatAddToGroupInput-' + id).tagsinput({
 		itemValue: 'username',
-		itemText: function(d) { return d.firstName + ' ' + d.lastName }
+		itemText: 'firstName'
 	});
 
 	$('#chatAddToGroupInput-' + id).tagsinput('input').typeahead({
@@ -656,14 +656,14 @@ function initAddToGroupInput(id) {
 	  minLength: 1
 	},
 	{
-	  name: id,
-	  displayKey: function(d) { return d.firstName + ' ' + d.lastName },
+	  name: 'friends',
+	  displayKey: 'username',
 	  // `ttAdapter` wraps the suggestion engine in an adapter that
 	  // is compatible with the typeahead jQuery plugin
 	  source: states.ttAdapter()
 	}).bind('typeahead:selected', $.proxy(function (obj, datum) {
 		this.tagsinput('add', datum);
-		this.tagsinput('input').typeahead('val', '');
+		this.tagsinput('input').typeahead('setQuery', '');
 	}, $('#chatAddToGroupInput-' + id)));;
 }
 
