@@ -260,6 +260,8 @@ body{
 		-mox-box-sizing: border-box;
 	}
 
+/* ================================
+   ========= CHAT CONTENT ========= */
 
 
 /* All Messages are here */
@@ -289,8 +291,12 @@ body{
 	.chatContent {
 		padding-top: 5px;
 	}
+	
 	.chatMessage{
-		margin-bottom: 4px;
+	}
+
+	.yesName {
+		margin-top: 15px;
 	}
 
 		.chatMessageSender {

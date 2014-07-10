@@ -76,24 +76,12 @@ $(function() {
 		formatElem($('#chatContent-' + data.chat));
 	});
 
-	function displayUsername (data, index) {
-	var index = index || 1;
-	var oldTime = new Date(data.messages[index].time.toString()),
-		newTime = new Date(data.messages[index-1].time.toString());
-	if ((newTime - oldTime) > 30000) {
-		return true;
-	} else if (data.messages[index].from != data.messages[index-1].from) {
-		return true 
-	}
-	return false;
-	}
-
-
 	// receiving messages to populate the newly-opened chat window with
 	socket.on('receiveRecentMessages', function(data) {
 		if (chattingWith.indexOf(data.from) > -1) {
 			var chatContent = $('#chatContent-' + data.from);
 			for (var i = 0; i < data.messages.length; i++) {
+				
 				if (displayUsername(data, i)) {
 					chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 				} else {
@@ -155,6 +143,19 @@ function documentInit() {
 	organizeChatWindows();
 
 	searchInit(socket);
+}
+
+function displayUsername (data, index) {
+	if (index == data.messages.length - 1) return true;
+	console.log(data.messages[index].time);
+	var oldTime = new Date(data.messages[index + 1].time),
+		newTime = new Date(data.messages[index].time);
+	if ((newTime - oldTime) > 300000) {
+		return true;
+	} else if (data.messages[index].from != data.messages[index + 1].from) {
+		return true 
+	}
+	return false;
 }
 
 function bindFriendListItem(friend) {
@@ -480,7 +481,7 @@ function chatMessage(from, time, content, friends) {
 	}
 	var name = (from == user) ? userFirstName : getFirstName(friends, from);
 	return (
-	  '<div class="chatMessage">' + 
+	  '<div class="chatMessage yesName">' + 
 	  '<div class="chatMessageSender">' + name + '</div>' +
 	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
 	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
@@ -489,11 +490,11 @@ function chatMessage(from, time, content, friends) {
 }
 
 function chatMessageWithoutName(time, content, friends) {
-	if (typeof time == 'string') {
+	if (typeof(time) == 'string') {
 		time = new Date(time);
 	}
 	return (
-	  '<div class="chatMessage" id="noName">' +
+	  '<div class="chatMessage noName">' +
 	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
 	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 	  '</div>'
