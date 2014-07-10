@@ -130,6 +130,17 @@ function documentInit() {
 	organizeChatWindows();
 
 	searchInit(socket);
+
+
+
+	$('#searchBar').tagsinput();
+
+	$('#searchBar').tagsinput('input').typeahead({
+	  local: ['asdf', 'aasdf', 'aaasdf']
+	}).bind('typeahead:selected', $.proxy(function (obj, datum) {  
+	  this.tagsinput('add', datum.value);
+	  this.tagsinput('input').typeahead('setQuery', '');
+	}, $('#searchBar')));
 }
 
 function bindFriendListItem(friend) {
@@ -633,43 +644,11 @@ function isGroupChat(entity) {
 }
 
 function initAddToGroupInput(id) {
-	$('#chatAddToGroupInput-' + id).tagsinput({
-		itemValue: 'username',
-		itemText: 'username'
-	});
-	$('#chatAddToGroupInput-' + id).tagsinput('input').typeahead(
-	{
-	  /*valueKey: function(f) { return f.firstName + ' ' + f.lastName; },
-	  template: function(f) { return '<p>' + f.firstName + ' ' + f.lastName + '</p>'; },
-	  source: friends,*/
-
-	  valueKey: 'text',
-	  prefetch: 'assets/cities.json',
-	  template: '<p>{{text}}</p>',
-	  
-	  engine: Hogan
-	}
-	/*{
-	  hint: true,
-	  highlight: true,
-	  minLength: 1
-	},
-	{
-	  name: 'friendsDEBUG',
-	  displayKey: 'username',
-	  // `ttAdapter` wraps the suggestion engine in an adapter that
-	  // is compatible with the typeahead jQuery plugin
-	  source: friendsTypeaheadData().ttAdapter()
-	}*/
-	).bind('typeahead:selected', $.proxy(function (obj, datum) {
-		this.tagsinput('add', datum);
-		this.tagsinput('input').typeahead('setQuery', '');
-	}, $('input')));
 }
 
 function friendsTypeaheadData() {
 	return (new Bloodhound({
-  	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('username'),
+  	datumTokenizer: function(d) { return Bloodhound.tokenizers.obj.whitespace(d.username); },
   	queryTokenizer: Bloodhound.tokenizers.whitespace,
   	local: friends
 	}));
