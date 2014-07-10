@@ -232,6 +232,7 @@ function selectChatWindow(friend) {
 			}
 		}, 50);
 		w.find('textarea').focus();
+		console.log('focusing on the textarea');
 	}
 }
 
@@ -356,8 +357,10 @@ function chatWindow(friend, friends) {
 	var name = getName(friend);
 	var code = '<div class="chatWindow" id="chatWindow-' + friend + '">' +
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
-    closeChatWindowButton(friend) + '</div>' +
+    closeChatWindowButton(friend) +
+    '<div class="toggleAddButton darkClickable" id="toggleAddButton-' + friend + '">+</div></div>' +
     '<div class="chatAddToGroup" id="chatAddToGroup-' + friend + '">' +
+    '<div class="chatAddPlaceholder" id="chatAddPlaceholder-' + friend + '">Enter names here...</div>' +
     '<input class="chatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" data-role="tagsinput"/>' +
     '<span class="addToGroupButton clickable" id="addToGroupButton-' + friend + '">add</span></div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
@@ -436,7 +439,7 @@ function moveInputCursor(el, diff) {
 }
 
 function closeChatWindowButton(friend) {
-	return ('<div class="closeChatWindow closeChatWindow-' +
+	return ('<div class="closeChatWindow darkClickable closeChatWindow-' +
 	  friend + '">X</div>');
 }
 
@@ -548,6 +551,7 @@ function openChatWindow(friend) {
 
 		refreshChatHidden();
 	}
+	scrollChatToBottom(friend, false);
 	selectChatWindow(friend);
 	saveOpenChats();
 }
@@ -640,7 +644,9 @@ function isGroupChat(entity) {
 
 function initAddToGroupInput(id) {
 	initTagInput(id);
+	bindTagInput(id);
 	bindAddToGroupButton(id);
+	bindToggleAddButton(id);
 }
 
 function bindAddToGroupButton(id) {
@@ -653,14 +659,24 @@ function bindAddToGroupButton(id) {
 		if (friendsArr.indexOf(id) != -1) {
 			// it's a single-user chat now
 			if (members.indexOf(id) == -1) members.push(id);
-			console.log('making a group with: ' + members);
 			if (members.length > 1) {
+				console.log('making a group with: ' + members);
 				makeGroup(members);
 			}
 		} else {
 			// add the users to this group
 		}
 		$('#chatAddToGroupInput-' + id).tagsinput('removeAll');
+		$('#chatAddToGroupInput-' + id).tagsinput('input').val('');
+		$('#chatAddToGroup-' + id).hide();
+	});
+}
+
+function bindTagInput(id) {
+	$('#chatAddToGroup-' + id).find('.tt-input').bind('keypress', function(evt) {
+		if ($(this).val() == '') {
+			console.log('empty');
+		}
 	});
 }
 
@@ -684,7 +700,7 @@ function initTagInput(id) {
 	}).bind('typeahead:selected', $.proxy(function (obj, datum) {
 		this.tagsinput('add', datum);
 		this.tagsinput('input').typeahead('val', '');
-	}, $('#chatAddToGroupInput-' + id)));;
+	}, $('#chatAddToGroupInput-' + id)));
 }
 
 function friendsTypeaheadData() {
@@ -701,6 +717,22 @@ function friendsTypeaheadData() {
 	return data;
 }
 
+function bindToggleAddButton(id) {
+	$('#toggleAddButton-' + id).unbind();
+	$('#toggleAddButton-' + id).click(function() {
+		$('#chatAddToGroup-' + id).toggle();
+		if ($('#chatAddToGroup-' + id).attr('display') != 'none') {
+			setTimeout(function() {
+				$('#chatAddToGroup-' + id).find('.tt-input').focus();
+				console.log('focusing on the tt-input');
+			}, 50);
+		}
+	});
+}
+
+function hideAddToGroup(id) {
+	$('#chatAddToGroup-' + id).hide();
+}
 
 // ============================ MATHJAX AND PRISM ==============================
 

@@ -23,7 +23,7 @@ body{
   height : 100%;
 }
 
-.clickable {
+.clickable, .darkClickable {
 	cursor: pointer;
 	-moz-user-select: none;
 	-webkit-user-select: none;
@@ -36,6 +36,14 @@ body{
 
 .clickable:active {
 	background-color: #E6E6E6;
+}
+
+.darkClickable:hover {
+	background-color: #E6E6E6;
+}
+
+.darkClickable:active {
+	background-color: #ccc;
 }
 /* ==============================================
    ================ NAVBAR =======================
@@ -132,26 +140,18 @@ body{
 	padding-left: 10px;
 	padding-top: 3px;
 
-	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
 	border-left: 3px solid #ccc;
 	
 	display: block;
-	cursor: pointer;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-}
-/*
-.friendLi:hover {
-	background-color: #F5F5F5;
 }
 
-.friendLi:active {
-	background-color: #E6E6E6;
-}
-*/
 .onlineFriendLi {
 	border-left: 3px solid #91E02F ;
+}
+
+.search {
+	border-bottom: 1px solid #ccc;
 }
 
 #searchBar {
@@ -211,7 +211,7 @@ body{
 	display: none;
 }
 
-/* Containg name + Close window */
+/* Containg name + addButton + Close window */
 .chatHeader {
 	height: 35px;
 	width: 300px;
@@ -246,7 +246,6 @@ body{
 		float: right;
 
 		color: black;
-		cursor: pointer;
 
 		font: 15px Helvetica, sans-serif;
 		text-align: center;
@@ -258,13 +257,6 @@ body{
 		-mox-box-sizing: border-box;
 	}
 
-	.closeChatWindow:hover {
-		background-color: #E6E6E6;
-	}
-
-	.closeChatWindow:active {
-		background-color: #ccc;
-	}
 
 
 /* All Messages are here */
@@ -455,8 +447,55 @@ body{
    ============ GROUPCHAT MAKER =================
 */
 
+.toggleAddButton {
+	height: 20px;
+	width: 23px;
+
+	margin-right: 4px;
+	padding: 2px;
+	float: right;
+
+	color: black;
+
+	font: 15px Helvetica, sans-serif;
+	text-align: center;
+	text-decoration: none;
+
+	/*To keep the padding within the box*/
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-mox-box-sizing: border-box;
+}
+
+.chatAddToGroup {
+	position: absolute;
+	background-color: white;
+	width: 300px;
+	height: 30px;
+	display: none;
+	border-bottom: 1px solid #ccc;
+}
+
+.chatAddPlaceholder {
+	position: absolute;
+	color: #ccc;
+	top: 5px;
+	left: 8px;
+	font-size: 15px;
+}
+
+.bootstrap-tagsinput {
+	width: 260px;
+	border-radius: 0;
+	border-width: 0 1px 0 0;
+}
+
 .bootstrap-tagsinput .tag {
 	color: #787878;
+}
+
+.twitter-typeahead {
+	font-size: 14px;
 }
 
 .tt-dropdown-menu {

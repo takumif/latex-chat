@@ -6,7 +6,7 @@ $(function() {
 });
 
 function resizeChatContentWrapper() {
-  $('.chatContentWrapper').height($(window).height() - 205);
+  $('.chatContentWrapper').height($(window).height() - 180);
   $('.friendList').height($('.sidebar').height() - 85);
 }
 
