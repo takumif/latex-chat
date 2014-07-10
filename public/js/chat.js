@@ -130,17 +130,6 @@ function documentInit() {
 	organizeChatWindows();
 
 	searchInit(socket);
-
-
-
-	$('#searchBar').tagsinput();
-
-	$('#searchBar').tagsinput('input').typeahead({
-	  local: ['asdf', 'aasdf', 'aaasdf']
-	}).bind('typeahead:selected', $.proxy(function (obj, datum) {  
-	  this.tagsinput('add', datum.value);
-	  this.tagsinput('input').typeahead('setQuery', '');
-	}, $('#searchBar')));
 }
 
 function bindFriendListItem(friend) {
@@ -363,7 +352,7 @@ function chatWindow(friend, friends) {
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
     closeChatWindowButton(friend) + '</div>' +
     '<div class="chatAddToGroup" id="chatAddToGroup-' + friend + '">' +
-    '<input class="ChatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" data-role="tagsinput"/>' +
+    '<input class="chatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" data-role="tagsinput"/>' +
     '</div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
@@ -644,6 +633,38 @@ function isGroupChat(entity) {
 }
 
 function initAddToGroupInput(id) {
+
+	// constructs the suggestion engine
+	var states = new Bloodhound({
+	  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('username'),
+	  queryTokenizer: Bloodhound.tokenizers.whitespace,
+	  // `states` is an array of state names defined in "The Basics"
+	  local: friends
+	});
+	 
+	// kicks off the loading/processing of `local` and `prefetch`
+	states.initialize();
+
+	$('#chatAddToGroupInput-' + id).tagsinput({
+		itemValue: 'username',
+		itemText: 'firstName'
+	});
+
+	$('#chatAddToGroupInput-' + id).tagsinput('input').typeahead({
+	  hint: true,
+	  highlight: true,
+	  minLength: 1
+	},
+	{
+	  name: 'friends',
+	  displayKey: 'username',
+	  // `ttAdapter` wraps the suggestion engine in an adapter that
+	  // is compatible with the typeahead jQuery plugin
+	  source: states.ttAdapter()
+	}).bind('typeahead:selected', $.proxy(function (obj, datum) {
+		this.tagsinput('add', datum);
+		this.tagsinput('input').typeahead('setQuery', '');
+	}, $('#chatAddToGroupInput-' + id)));;
 }
 
 function friendsTypeaheadData() {
@@ -653,6 +674,7 @@ function friendsTypeaheadData() {
   	local: friends
 	}));
 }
+
 
 // ============================ MATHJAX AND PRISM ==============================
 
