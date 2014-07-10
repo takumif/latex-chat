@@ -337,6 +337,7 @@ body{
 .chatPrevButton {
 	border-right: 1px solid #ccc;;
 }
+
 /* ==============================================
    ============== MINIMIZED CHATS ===============
 */
@@ -440,4 +441,12 @@ body{
 
 	font: 13px Helvetica, sans-serif;
 	
+}
+
+/* ==============================================
+   ============ GROUPCHAT MAKER =================
+*/
+
+.bootstrap-tagsinput .tag {
+	color: #787878;
 }

@@ -209,6 +209,7 @@ function initChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 	}
 	resizeChatContentWrapper(); // in js/style.js
 	bindChatWindow(friend);
+	initAddToGroupInput(friend);
 }
 
 function createChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
@@ -229,7 +230,8 @@ function selectChatWindow(friend) {
 }
 
 function bindChatWindow(friend) {
-	$('#chatWindow-' + friend).click(function() {
+	$('#chatHeader-' + friend + ', #chatContentWrapper-' + friend + ', #chatButtonsDiv-' + friend)
+	  .click(function() {
 		selectChatWindow(friend);
 	});
 	bindChatInputButtons(friend);
@@ -350,7 +352,7 @@ function chatWindow(friend, friends) {
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
     closeChatWindowButton(friend) + '</div>' +
     '<div class="chatAddToGroup" id="chatAddToGroup-' + friend + '">' +
-    '<input class="ChatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" />' +
+    '<input class="ChatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" data-role="tagsinput"/>' +
     '</div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
@@ -362,7 +364,7 @@ function chatWindow(friend, friends) {
 }
 
 function chatInputButtons(friend) {
-	var code = '<div class="chatButtonsDiv">' +
+	var code = '<div class="chatButtonsDiv" id="chatButtonsDiv-' + friend + '">' +
 		'<span class="chatButton clickable chatLatexButton" id="chatLatexButton-' + friend + '">Insert LaTeX</span>' +
 		'<span class="chatButton clickable chatCodeButton" id="chatCodeButton-' + friend + '">Insert code</span>' +
 		'<span class="chatButton clickable chatPrevButton" id="chatPrevButton-' + friend + '">Prev</span>' +
@@ -630,6 +632,48 @@ function isGroupChat(entity) {
 	return groups.hasOwnProperty(entity);
 }
 
+function initAddToGroupInput(id) {
+	$('#chatAddToGroupInput-' + id).tagsinput({
+		itemValue: 'username',
+		itemText: 'username'
+	});
+	$('#chatAddToGroupInput-' + id).tagsinput('input').typeahead(
+	{
+	  /*valueKey: function(f) { return f.firstName + ' ' + f.lastName; },
+	  template: function(f) { return '<p>' + f.firstName + ' ' + f.lastName + '</p>'; },
+	  source: friends,*/
+
+	  valueKey: 'text',
+	  prefetch: 'assets/cities.json',
+	  template: '<p>{{text}}</p>',
+	  
+	  engine: Hogan
+	}
+	/*{
+	  hint: true,
+	  highlight: true,
+	  minLength: 1
+	},
+	{
+	  name: 'friendsDEBUG',
+	  displayKey: 'username',
+	  // `ttAdapter` wraps the suggestion engine in an adapter that
+	  // is compatible with the typeahead jQuery plugin
+	  source: friendsTypeaheadData().ttAdapter()
+	}*/
+	).bind('typeahead:selected', $.proxy(function (obj, datum) {
+		this.tagsinput('add', datum);
+		this.tagsinput('input').typeahead('setQuery', '');
+	}, $('input')));
+}
+
+function friendsTypeaheadData() {
+	return (new Bloodhound({
+  	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('username'),
+  	queryTokenizer: Bloodhound.tokenizers.whitespace,
+  	local: friends
+	}));
+}
 
 // ============================ MATHJAX AND PRISM ==============================
 

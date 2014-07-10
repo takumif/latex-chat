@@ -6,6 +6,6 @@ $(function() {
 });
 
 function resizeChatContentWrapper() {
-  $('.chatContentWrapper').height($(window).height() - 180);
+  $('.chatContentWrapper').height($(window).height() - 205);
 }
 
