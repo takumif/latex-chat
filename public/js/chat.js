@@ -1,6 +1,7 @@
 $(function() {
 	chattingWith = [];
 	onlineFriends = [];
+	friendsArr = []; // [ username, ... ]
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
 	sentMsgs = {};
@@ -16,6 +17,9 @@ $(function() {
 		}
 		if (data.friends) {
 			friends = data.friends;
+			for (var i = 0; i < friends.length; i++) {
+				friendsArr.push(friends[i].username);
+			}
 		}
 		if (data.chattingWith) {
 			chattingWith = data.chattingWith;
@@ -43,7 +47,7 @@ $(function() {
 		
 		if (data.groups) {
 			for (var group in groups) {
-				console.log(group);
+				console.log('group: ' + group);
 				if (groups.hasOwnProperty(group)) {
 					addToSentMsgs(group);
 					$('.friendListUl').append(friendListItem(group, false));
@@ -353,7 +357,7 @@ function chatWindow(friend, friends) {
     closeChatWindowButton(friend) + '</div>' +
     '<div class="chatAddToGroup" id="chatAddToGroup-' + friend + '">' +
     '<input class="chatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" data-role="tagsinput"/>' +
-    '</div>' +
+    '<span class="addToGroupButton clickable" id="addToGroupButton-' + friend + '">add</span></div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
     '<div class="chatInputDiv">' +
@@ -633,19 +637,33 @@ function isGroupChat(entity) {
 }
 
 function initAddToGroupInput(id) {
+	initTagInput(id);
+	bindAddToGroupButton(id);
+}
 
-	// constructs the suggestion engine
-	var states = new Bloodhound({
-	  datumTokenizer: function (d) { return Bloodhound.tokenizers.whitespace(d.firstName + ' ' + d.lastName) },
-	  queryTokenizer: Bloodhound.tokenizers.whitespace,
-	  // `states` is an array of state names defined in "The Basics"
-	  local: friends
+function bindAddToGroupButton(id) {
+	$('#addToGroupButton-' + id).click(function() {
+		var members = [];
+		var data = $('#chatAddToGroupInput-' + id).tagsinput('items');
+		for (var i = 0; i < data.length; i++) {
+			members.push(data[i].username);
+		}
+		if (friendsArr.indexOf(id) != -1) {
+			// it's a single-user chat now
+			if (members.indexOf(id) == -1) members.push(id);
+			console.log('making a group with: ' + members);
+			if (members.length > 1) {
+				makeGroup(members);
+			}
+		} else {
+			// add the users to this group
+		}
+		$('#chatAddToGroupInput-' + id).tagsinput('removeAll');
 	});
-	 
-	// kicks off the loading/processing of `local` and `prefetch`
-	states.initialize();
+}
 
-	$('#chatAddToGroupInput-' + id).tagsinput({
+function initTagInput(id) {
+		$('#chatAddToGroupInput-' + id).tagsinput({
 		itemValue: 'username',
 		itemText: function(d) { return d.firstName + ' ' + d.lastName }
 	});
@@ -660,7 +678,7 @@ function initAddToGroupInput(id) {
 	  displayKey: function(d) { return d.firstName + ' ' + d.lastName },
 	  // `ttAdapter` wraps the suggestion engine in an adapter that
 	  // is compatible with the typeahead jQuery plugin
-	  source: states.ttAdapter()
+	  source: friendsTypeaheadData().ttAdapter()
 	}).bind('typeahead:selected', $.proxy(function (obj, datum) {
 		this.tagsinput('add', datum);
 		this.tagsinput('input').typeahead('val', '');
@@ -668,11 +686,17 @@ function initAddToGroupInput(id) {
 }
 
 function friendsTypeaheadData() {
-	return (new Bloodhound({
-  	datumTokenizer: function(d) { return Bloodhound.tokenizers.obj.whitespace(d.username); },
-  	queryTokenizer: Bloodhound.tokenizers.whitespace,
-  	local: friends
-	}));
+	// constructs the suggestion engine
+	var data = new Bloodhound({
+	  datumTokenizer: function (d) { return Bloodhound.tokenizers.whitespace(d.firstName + ' ' + d.lastName) },
+	  queryTokenizer: Bloodhound.tokenizers.whitespace,
+	  local: friends
+	});
+	 
+	// kicks off the loading/processing of `local` and `prefetch`
+	data.initialize();
+
+	return data;
 }
 
 

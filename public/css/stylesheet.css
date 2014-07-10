@@ -108,7 +108,14 @@ body{
   box-shadow: -1px 0 5px 0 #ccc;
 }
 
+.friendList {
+	height: 100%;
+}
+
 .friendListUl {
+	height: 100%;
+	overflow-x: hidden;
+
 	padding: 0;
 	list-style: none;
 	margin: 0;
@@ -264,6 +271,7 @@ body{
 .chatContentWrapper {
 	height: 100%;
 	overflow-y: scroll;
+	overflow-x: hidden;
 
 	padding-left: 15px;	
 	padding-right: 15px;

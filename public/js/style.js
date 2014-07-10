@@ -7,5 +7,6 @@ $(function() {
 
 function resizeChatContentWrapper() {
   $('.chatContentWrapper').height($(window).height() - 205);
+  $('.friendList').height($('.sidebar').height() - 85);
 }
 
