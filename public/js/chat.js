@@ -362,7 +362,7 @@ function chatWindow(friend, friends) {
     '<div class="chatAddToGroup" id="chatAddToGroup-' + friend + '">' +
     '<div class="chatAddPlaceholder" id="chatAddPlaceholder-' + friend + '">Enter names here...</div>' +
     '<input class="chatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" data-role="tagsinput"/>' +
-    '<span class="addToGroupButton clickable" id="addToGroupButton-' + friend + '">add</span></div>' +
+    '<div class="addToGroupButton clickable" id="addToGroupButton-' + friend + '">add</div></div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
     '<div class="chatInputDiv">' +
@@ -673,10 +673,20 @@ function bindAddToGroupButton(id) {
 }
 
 function bindTagInput(id) {
-	$('#chatAddToGroup-' + id).find('.tt-input').bind('keypress', function(evt) {
-		if ($(this).val() == '') {
-			console.log('empty');
-		}
+	$('#chatAddToGroup-' + id).find('.tt-input').bind('keydown', function(evt) {
+		$('#chatAddPlaceholder-' + id).text('');
+	});
+	$('#chatAddToGroup-' + id).find('.tt-input').bind('keyup', function(evt) {
+		setTimeout(function() {
+			if ($('#chatAddToGroupInput-' + id).val() == '' && $('#chatAddToGroup-' + id).find('.tt-input').val() == '') {
+				$('#chatAddPlaceholder-' + id).text('Enter names here...');
+			}
+		}, 50);
+	});
+
+	// clicking on the placeholder div makes the input focused
+	$('#chatAddPlaceholder-' + id).click(function() {
+		$('#chatAddToGroup-' + id).find('.tt-input').focus();
 	});
 }
 

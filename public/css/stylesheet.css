@@ -346,7 +346,6 @@ body{
 	position: fixed;
 	bottom: 0px;
 	left: 20px;
-	width: 100px;
 }
 
 .minimizedToggle {
@@ -374,7 +373,7 @@ body{
 .minimizedWindowList {
 
 	/*float:left;*/
-	width: 130px;
+	width: 170px;
 
 	font-size: 13px;
 
@@ -408,7 +407,7 @@ body{
 
 .minimizedWindow {
 	text-align: left;
-	width: 100px;
+	width: 140px;
 	float: left;
 	margin: 0;
 	padding: 5px;
@@ -434,13 +433,17 @@ body{
 	box-shadow: 0 -2px 5px -2px #DBDBDB;
 }
 
+.selectedChatWindow .chatInputDiv {
+	background-color: #F5FFF2;
+}
+
 .chatInput {
 	outline-width: 0px;
 	resize : none;
 	border: none;
 
-	font: 13px Helvetica, sans-serif;
-	
+	font: 13px Helvetica, sans-serif;	
+	background-color: transparent;
 }
 
 /* ==============================================
@@ -471,7 +474,6 @@ body{
 	position: absolute;
 	background-color: white;
 	width: 300px;
-	height: 30px;
 	display: none;
 	border-bottom: 1px solid #ccc;
 }
@@ -482,12 +484,17 @@ body{
 	top: 5px;
 	left: 8px;
 	font-size: 15px;
+
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 
 .bootstrap-tagsinput {
-	width: 260px;
+	width: 245px;
 	border-radius: 0;
 	border-width: 0 1px 0 0;
+	margin: 0;
 }
 
 .bootstrap-tagsinput .tag {
@@ -513,4 +520,9 @@ body{
 
 .tt-dropdown-menu:active {
 	background-color: #E6E6E6;
+}
+
+.addToGroupButton {
+	padding: 5px 7px 6px 8px;
+	float: right;
 }
