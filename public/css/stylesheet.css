@@ -123,10 +123,6 @@ body{
 	font: 15px Helvetica, sans-serif;
 
 	border-bottom: 1px solid #ccc;
-	cursor: pointer;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
 }
 
 .friendLi {
@@ -140,6 +136,10 @@ body{
 	border-left: 3px solid #ccc;
 	
 	display: block;
+	cursor: pointer;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 /*
 .friendLi:hover {

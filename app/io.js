@@ -272,9 +272,11 @@ function getMembersOfGroups(socket, groups, groupIDs, callback) {
       if (group == null) {
         console.log('group not found');
       }
-      groups[id] = group.members;
-      if (groupIDs.indexOf(id) == groupIDs.length - 1) {
-        groups[id].splice(groups[id].indexOf(socket.request.user.username), 1); // get rid of user from the array
+      groups[group.idString] = group.members;
+      groups[group.idString].splice(groups[group.idString].indexOf(socket.request.user.username), 1); // get rid of user from the array
+
+      console.log('done dealing with elem ' + group.idString);
+      if (Object.getOwnPropertyNames(groups).length == groupIDs.length) { // done adding all the groups to the groups assoc array
         callback();
       }
     });

@@ -5,7 +5,7 @@ $(function() {
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
 	sentMsgs = {};
-	groups = {}; // { groupName : [user, friend1, friend2], .. }
+	groups = {}; // { groupName : [friend1, friend2], .. }
 
 	socket = io.connect('http://localhost:8080');
 
@@ -25,6 +25,8 @@ $(function() {
 			chattingWith = data.chattingWith;
 		}
 		if (data.groups) {
+			console.log('groups:');
+			console.log(data.groups);
 			groups = data.groups;
 		}
 
