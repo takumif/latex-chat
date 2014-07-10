@@ -1,10 +1,11 @@
 $(function() {
 	chattingWith = [];
 	onlineFriends = [];
+	friendsArr = []; // [ username, ... ]
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
 	sentMsgs = {};
-	groups = {}; // { groupName : [user, friend1, friend2], .. }
+	groups = {}; // { groupName : [friend1, friend2], .. }
 
 	socket = io.connect('http://localhost:8080');
 
@@ -16,7 +17,20 @@ $(function() {
 		}
 		if (data.friends) {
 			friends = data.friends;
+			for (var i = 0; i < friends.length; i++) {
+				friendsArr.push(friends[i].username);
+			}
+		}
+		if (data.chattingWith) {
+			chattingWith = data.chattingWith;
+		}
+		if (data.groups) {
+			console.log('groups:');
+			console.log(data.groups);
+			groups = data.groups;
+		}
 
+		if (data.friends) {
 			for (var i = 0; i < friends.length; i++) {
 				addToSentMsgs(friends[i].username);
 			}
@@ -33,15 +47,9 @@ $(function() {
 
 		}
 		
-		if (data.chattingWith) {
-			chattingWith = data.chattingWith;
-		}
-
 		if (data.groups) {
-			groups = data.groups;
-
 			for (var group in groups) {
-				console.log(group);
+				console.log('group: ' + group);
 				if (groups.hasOwnProperty(group)) {
 					addToSentMsgs(group);
 					$('.friendListUl').append(friendListItem(group, false));
@@ -226,6 +234,7 @@ function initChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
 	}
 	resizeChatContentWrapper(); // in js/style.js
 	bindChatWindow(friend);
+	initAddToGroupInput(friend);
 }
 
 function createChatWindow(friend, socket, chattingWith, onlineFriends, friends) {
@@ -246,7 +255,8 @@ function selectChatWindow(friend) {
 }
 
 function bindChatWindow(friend) {
-	$('#chatWindow-' + friend).click(function() {
+	$('#chatHeader-' + friend + ', #chatContentWrapper-' + friend + ', #chatButtonsDiv-' + friend)
+	  .click(function() {
 		selectChatWindow(friend);
 	});
 	bindChatInputButtons(friend);
@@ -366,6 +376,9 @@ function chatWindow(friend, friends) {
 	var code = '<div class="chatWindow" id="chatWindow-' + friend + '">' +
     '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
     closeChatWindowButton(friend) + '</div>' +
+    '<div class="chatAddToGroup" id="chatAddToGroup-' + friend + '">' +
+    '<input class="chatAddToGroupInput" id="chatAddToGroupInput-' + friend +'" data-role="tagsinput"/>' +
+    '<span class="addToGroupButton clickable" id="addToGroupButton-' + friend + '">add</span></div>' +
     '<div class="chatContentWrapper" id="chatContentWrapper-' + friend + '">' +
     '<div class="chatContent" id="chatContent-' + friend + '"></div></div>' +
     '<div class="chatInputDiv">' +
@@ -376,9 +389,9 @@ function chatWindow(friend, friends) {
 }
 
 function chatInputButtons(friend) {
-	var code = '<div class="chatButtonsDiv">' +
-		'<span class="chatButton clickable chatLatexButton" id="chatLatexButton-' + friend + '">Insert $\LaTeX$</span>' +
-		'<span class="chatButton clickable chatCodeButton" id="chatCodeButton-' + friend + '">Insert <code>code</code></span>' +
+	var code = '<div class="chatButtonsDiv" id="chatButtonsDiv-' + friend + '">' +
+		'<span class="chatButton clickable chatLatexButton" id="chatLatexButton-' + friend + '">Insert LaTeX</span>' +
+		'<span class="chatButton clickable chatCodeButton" id="chatCodeButton-' + friend + '">Insert code</span>' +
 		'<span class="chatButton clickable chatPrevButton" id="chatPrevButton-' + friend + '">Prev</span>' +
 		'<span class="chatButton clickable chatNextButton" id="chatNextButton-' + friend + '">Next</span>' +
 		'</div>';
@@ -654,6 +667,69 @@ function makeGroup(members) {
 function isGroupChat(entity) {
 	console.log(friends);
 	return groups.hasOwnProperty(entity);
+}
+
+function initAddToGroupInput(id) {
+	initTagInput(id);
+	bindAddToGroupButton(id);
+}
+
+function bindAddToGroupButton(id) {
+	$('#addToGroupButton-' + id).click(function() {
+		var members = [];
+		var data = $('#chatAddToGroupInput-' + id).tagsinput('items');
+		for (var i = 0; i < data.length; i++) {
+			members.push(data[i].username);
+		}
+		if (friendsArr.indexOf(id) != -1) {
+			// it's a single-user chat now
+			if (members.indexOf(id) == -1) members.push(id);
+			console.log('making a group with: ' + members);
+			if (members.length > 1) {
+				makeGroup(members);
+			}
+		} else {
+			// add the users to this group
+		}
+		$('#chatAddToGroupInput-' + id).tagsinput('removeAll');
+	});
+}
+
+function initTagInput(id) {
+		$('#chatAddToGroupInput-' + id).tagsinput({
+		itemValue: 'username',
+		itemText: function(d) { return d.firstName + ' ' + d.lastName }
+	});
+
+	$('#chatAddToGroupInput-' + id).tagsinput('input').typeahead({
+	  hint: true,
+	  highlight: true,
+	  minLength: 1
+	},
+	{
+	  name: id,
+	  displayKey: function(d) { return d.firstName + ' ' + d.lastName },
+	  // `ttAdapter` wraps the suggestion engine in an adapter that
+	  // is compatible with the typeahead jQuery plugin
+	  source: friendsTypeaheadData().ttAdapter()
+	}).bind('typeahead:selected', $.proxy(function (obj, datum) {
+		this.tagsinput('add', datum);
+		this.tagsinput('input').typeahead('val', '');
+	}, $('#chatAddToGroupInput-' + id)));;
+}
+
+function friendsTypeaheadData() {
+	// constructs the suggestion engine
+	var data = new Bloodhound({
+	  datumTokenizer: function (d) { return Bloodhound.tokenizers.whitespace(d.firstName + ' ' + d.lastName) },
+	  queryTokenizer: Bloodhound.tokenizers.whitespace,
+	  local: friends
+	});
+	 
+	// kicks off the loading/processing of `local` and `prefetch`
+	data.initialize();
+
+	return data;
 }
 
 

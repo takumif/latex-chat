@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <title>Verbose</title>
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.1.min.js">
+  </script>
+  <!-- load Bootstrap for Tags Input -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+  <!-- load Typeahead for Tags Input -->
+  <script src="/lib/typeahead/typeahead.js"></script>
+
+  <!-- load Hogan for Tags Input -->
+  <script src="/lib/hogan/hogan-2.0.0.js"></script>
+
+
+  <!-- load Tags Input -->
+  <script src="/lib/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+  <link rel="stylesheet" type="text/css" href="/lib/bootstrap-tagsinput/bootstrap-tagsinput.css">
+
+
+  <script>
+  $(function() {
+    $('input').tagsinput();
+
+    $('input').tagsinput('input').typeahead({
+      local: ['asdf', 'aasdf', 'aaasdf']
+    }).bind('typeahead:selected', $.proxy(function (obj, datum) {  
+      this.tagsinput('add', datum.value);
+      this.tagsinput('input').typeahead('setQuery', '');
+    }, $('input')));
+  })
+  </script>
+
+
+</head>
+<body>
+<input type="text" />
+</body>
+</html>

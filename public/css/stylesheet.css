@@ -108,7 +108,14 @@ body{
   box-shadow: -1px 0 5px 0 #ccc;
 }
 
+.friendList {
+	height: 100%;
+}
+
 .friendListUl {
+	height: 100%;
+	overflow-x: hidden;
+
 	padding: 0;
 	list-style: none;
 	margin: 0;
@@ -116,10 +123,6 @@ body{
 	font: 15px Helvetica, sans-serif;
 
 	border-bottom: 1px solid #ccc;
-	cursor: pointer;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
 }
 
 .friendLi {
@@ -133,6 +136,10 @@ body{
 	border-left: 3px solid #ccc;
 	
 	display: block;
+	cursor: pointer;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 /*
 .friendLi:hover {
@@ -266,6 +273,7 @@ body{
 .chatContentWrapper {
 	height: 100%;
 	overflow-y: scroll;
+	overflow-x: hidden;
 
 	padding-left: 15px;	
 	padding-right: 15px;
@@ -323,12 +331,13 @@ body{
 }
 
 .chatButton {
-	padding: 5px 11px;
+	padding: 5px 13px;
 	font-size: 13px;
 }
 
 .chatLatexButton {
 	border-right: 1px solid #ccc;;
+	padding-left: 12px;
 }
 
 .chatCodeButton {
@@ -338,6 +347,7 @@ body{
 .chatPrevButton {
 	border-right: 1px solid #ccc;;
 }
+
 /* ==============================================
    ============== MINIMIZED CHATS ===============
 */
@@ -441,4 +451,29 @@ body{
 
 	font: 13px Helvetica, sans-serif;
 	
+}
+
+/* ==============================================
+   ============ GROUPCHAT MAKER =================
+*/
+
+.bootstrap-tagsinput .tag {
+	color: #787878;
+}
+
+.tt-dropdown-menu {
+	background-color: white;
+	width: 300px;
+	cursor: pointer;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+
+.tt-dropdown-menu:hover {
+	background-color: #F5F5F5;
+}
+
+.tt-dropdown-menu:active {
+	background-color: #E6E6E6;
 }
