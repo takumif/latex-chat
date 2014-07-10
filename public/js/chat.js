@@ -76,16 +76,35 @@ $(function() {
 		formatElem($('#chatContent-' + data.chat));
 	});
 
+	function displayUsername (data, index) {
+	var index = index || 1;
+	var oldTime = new Date(data.messages[index].time.toString()),
+		newTime = new Date(data.messages[index-1].time.toString());
+	if ((newTime - oldTime) > 30000) {
+		return true;
+	} else if (data.messages[index].from != data.messages[index-1].from) {
+		return true 
+	}
+	return false;
+	}
+
+
 	// receiving messages to populate the newly-opened chat window with
 	socket.on('receiveRecentMessages', function(data) {
 		if (chattingWith.indexOf(data.from) > -1) {
 			var chatContent = $('#chatContent-' + data.from);
 			for (var i = 0; i < data.messages.length; i++) {
-				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
+				if (displayUsername(data, i)) {
+					chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
+				} else {
+					console.log('shouldn"t display Username')
+					chatContent.prepend(chatMessageWithoutName(data.messages[i].time, data.messages[i].content, friends));
+				}
 			}
 			formatElem($('#chatContent-' + data.from));
 		}
 	});
+
 
 	// a friend has gone offline
 	socket.on('userOffline', function(data) {
@@ -467,6 +486,18 @@ function chatMessage(from, time, content, friends) {
 	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 	  '</div>'
 	);
+}
+
+function chatMessageWithoutName(time, content, friends) {
+	if (typeof time == 'string') {
+		time = new Date(time);
+	}
+	return (
+	  '<div class="chatMessage" id="noName">' +
+	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
+	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
+	  '</div>'
+	 );
 }
 
 function escapeHtml(string) {

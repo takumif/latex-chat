@@ -23,7 +23,7 @@ body{
   height : 100%;
 }
 
-.clickable, .darkClickable {
+.clickable {
 	cursor: pointer;
 	-moz-user-select: none;
 	-webkit-user-select: none;
@@ -36,14 +36,6 @@ body{
 
 .clickable:active {
 	background-color: #E6E6E6;
-}
-
-.darkClickable:hover {
-	background-color: #E6E6E6;
-}
-
-.darkClickable:active {
-	background-color: #ccc;
 }
 /* ==============================================
    ================ NAVBAR =======================
@@ -116,14 +108,7 @@ body{
   box-shadow: -1px 0 5px 0 #ccc;
 }
 
-.friendList {
-	height: 100%;
-}
-
 .friendListUl {
-	height: 100%;
-	overflow-x: hidden;
-
 	padding: 0;
 	list-style: none;
 	margin: 0;
@@ -131,6 +116,10 @@ body{
 	font: 15px Helvetica, sans-serif;
 
 	border-bottom: 1px solid #ccc;
+	cursor: pointer;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
 }
 
 .friendLi {
@@ -140,18 +129,22 @@ body{
 	padding-left: 10px;
 	padding-top: 3px;
 
-	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #ccc;
 	border-left: 3px solid #ccc;
 	
 	display: block;
 }
-
-.onlineFriendLi {
-	border-left: 3px solid #91E02F ;
+/*
+.friendLi:hover {
+	background-color: #F5F5F5;
 }
 
-.search {
-	border-bottom: 1px solid #ccc;
+.friendLi:active {
+	background-color: #E6E6E6;
+}
+*/
+.onlineFriendLi {
+	border-left: 3px solid #91E02F ;
 }
 
 #searchBar {
@@ -214,7 +207,6 @@ body{
 /* ================================
    ======== CHATHEADER ============
  Containg name + Close window */
-
 .chatHeader {
 	height: 35px;
 	width: 300px;
@@ -249,6 +241,7 @@ body{
 		float: right;
 
 		color: black;
+		cursor: pointer;
 
 		font: 15px Helvetica, sans-serif;
 		text-align: center;
@@ -260,13 +253,25 @@ body{
 		-mox-box-sizing: border-box;
 	}
 
+	.closeChatWindow:hover {
+		background-color: #E6E6E6;
+	}
+
+<<<<<<< HEAD
+/* ================================
+   ========= CHATBODY =============
+ All Messages are here */
+=======
+	.closeChatWindow:active {
+		background-color: #ccc;
+	}
 
 
 /* All Messages are here */
+>>>>>>> e6fdbda112340e6b4f5a90f0e6f0e994f1d7c062
 .chatContentWrapper {
 	height: 100%;
 	overflow-y: scroll;
-	overflow-x: hidden;
 
 	padding-left: 15px;	
 	padding-right: 15px;
@@ -324,13 +329,12 @@ body{
 }
 
 .chatButton {
-	padding: 5px 13px;
+	padding: 5px 11px;
 	font-size: 13px;
 }
 
 .chatLatexButton {
 	border-right: 1px solid #ccc;;
-	padding-left: 12px;
 }
 
 .chatCodeButton {
@@ -340,7 +344,6 @@ body{
 .chatPrevButton {
 	border-right: 1px solid #ccc;;
 }
-
 /* ==============================================
    ============== MINIMIZED CHATS ===============
 */
@@ -349,6 +352,7 @@ body{
 	position: fixed;
 	bottom: 0px;
 	left: 20px;
+	width: 100px;
 }
 
 .minimizedToggle {
@@ -375,8 +379,12 @@ body{
 */
 .minimizedWindowList {
 
+<<<<<<< HEAD
+	float:left;
+=======
 	/*float:left;*/
-	width: 170px;
+>>>>>>> e6fdbda112340e6b4f5a90f0e6f0e994f1d7c062
+	width: 130px;
 
 	font-size: 13px;
 
@@ -397,9 +405,27 @@ body{
 	z-index: 1;
 }
 
+<<<<<<< HEAD
+.minimizedWindow {
+	text-align: left;
+	min-width: 80px;
+	max-width: 100px;
+	float: left;
+	margin: 2px 0;
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+li .closeChatWindow {
+	float: right;
+	margin-right: 0;
+=======
 .minimizedWindowDiv .closeChatWindow {
 	float: left;
 	margin: 0;
+>>>>>>> e6fdbda112340e6b4f5a90f0e6f0e994f1d7c062
 
 	height: 25px;
 	width: 20px;
@@ -408,9 +434,11 @@ body{
 	font-size: 12px;
 }
 
+<<<<<<< HEAD
+=======
 .minimizedWindow {
 	text-align: left;
-	width: 140px;
+	width: 100px;
 	float: left;
 	margin: 0;
 	padding: 5px;
@@ -420,6 +448,7 @@ body{
 	white-space: nowrap;
 	word-wrap: break-word;
 }
+>>>>>>> e6fdbda112340e6b4f5a90f0e6f0e994f1d7c062
 
 /* ==============================================
    ================ INPUT =======================
@@ -436,96 +465,11 @@ body{
 	box-shadow: 0 -2px 5px -2px #DBDBDB;
 }
 
-.selectedChatWindow .chatInputDiv {
-	background-color: #F5FFF2;
-}
-
 .chatInput {
 	outline-width: 0px;
 	resize : none;
 	border: none;
 
-	font: 13px Helvetica, sans-serif;	
-	background-color: transparent;
-}
-
-/* ==============================================
-   ============ GROUPCHAT MAKER =================
-*/
-
-.toggleAddButton {
-	height: 20px;
-	width: 23px;
-
-	margin-right: 4px;
-	padding: 2px;
-	float: right;
-
-	color: black;
-
-	font: 15px Helvetica, sans-serif;
-	text-align: center;
-	text-decoration: none;
-
-	/*To keep the padding within the box*/
-	box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	-mox-box-sizing: border-box;
-}
-
-.chatAddToGroup {
-	position: absolute;
-	background-color: white;
-	width: 300px;
-	display: none;
-	border-bottom: 1px solid #ccc;
-}
-
-.chatAddPlaceholder {
-	position: absolute;
-	color: #ccc;
-	top: 5px;
-	left: 8px;
-	font-size: 15px;
-
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-}
-
-.bootstrap-tagsinput {
-	width: 245px;
-	border-radius: 0;
-	border-width: 0 1px 0 0;
-	margin: 0;
-}
-
-.bootstrap-tagsinput .tag {
-	color: #787878;
-}
-
-.twitter-typeahead {
-	font-size: 14px;
-}
-
-.tt-dropdown-menu {
-	background-color: white;
-	width: 300px;
-	cursor: pointer;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
-}
-
-.tt-dropdown-menu:hover {
-	background-color: #F5F5F5;
-}
-
-.tt-dropdown-menu:active {
-	background-color: #E6E6E6;
-}
-
-.addToGroupButton {
-	padding: 5px 7px 6px 8px;
-	float: right;
+	font: 13px Helvetica, sans-serif;
+	
 }
