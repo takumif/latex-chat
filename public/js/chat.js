@@ -7,12 +7,14 @@ $(function() {
 	friendRequests = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	sentMsgs = {};
 	groups = {}; // { groupName : [friend1, friend2], .. }
-
-	socket = io.connect('http://localhost:8080');
+	initialized = false;
 
 	documentInit();
 
 	socket.on('initFriends', function(data) {
+		if (!initialized) {
+		initialized = true;
+
 		if (data.onlineFriends) {
 			onlineFriends = data.onlineFriends;
 		}
@@ -71,7 +73,7 @@ $(function() {
 		}
 		refreshChatHidden();
 
-	}); // end socket.on('initFriends')
+	}}); // end socket.on('initFriends')
 
 	socket.on('receiveMessage', function(data) {
 		console.log('received a message');
