@@ -146,10 +146,20 @@ body{
 	display: block;
 }
 
+.pendingFriendLi{
+	cursor: default;
+
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+
 .onlineFriendLi {
 	border-left: 3px solid #91E02F ;
 }
-
+/* ==============================================
+   =================== SEARCH ===================
+*/
 .search {
 	border-bottom: 1px solid #ccc;
 }
@@ -181,6 +191,45 @@ body{
 
 	float: right;
 }
+
+/* ==============================================
+   ============ FRIEND REQUESTS =================
+*/
+
+.friendRequests {
+	font-size: 15px;
+	padding-top: 5px;
+}
+
+.friendRequestsHeader {
+	text-align: center;
+}
+
+.friendRequestsList {
+	padding: 1px;
+}
+
+.friendRequestsListItem {
+	padding: 4px;
+	overflow: hidden;
+}
+
+.friendRequestsListItemName {
+	float: left;
+	width: 145px;
+	padding: 5px 0;
+}
+
+.friendRequestAccept {
+	float: left;
+	padding: 5px 6px;
+}
+
+.friendRequestDecline {
+	float: left;
+	padding: 5px 6px;
+}
+
 
 /* ==============================================
    =============== CHAT WINDOWS =================
@@ -231,6 +280,9 @@ body{
 	border-left: 3px solid #ccc;
 	border-bottom: 1px solid #DBDBDB;
 
+	text-overflow: ellipsis;
+	overflow: hidden;
+
 	/*To keep the padding within the box*/
 	box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -240,6 +292,15 @@ body{
 	-webkit-user-select: none;
 	-ms-user-select: none;
 } 
+	.chatHeaderNameWrapper {
+		float: left;
+		width: 225px;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+	.chatHeaderName {
+		white-space: nowrap;
+	}
 	.onlineChatHeader{
 		border-left: 3px solid #91E02F;
 	}
@@ -447,11 +508,11 @@ body{
 	border-top: 1px solid #DEDEDE;
 	box-shadow: 0 -2px 5px -2px #DBDBDB;
 }
-
+/*
 .selectedChatWindow .chatInputDiv {
 	background-color: #F5FFF2;
 }
-
+*/
 .chatInput {
 	outline-width: 0px;
 	resize : none;
@@ -516,7 +577,7 @@ body{
 	color: #787878;
 }
 
-.twitter-typeahead {
+.tt-input, .tt-hint {
 	font-size: 14px;
 }
 

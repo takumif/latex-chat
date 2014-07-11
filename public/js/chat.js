@@ -59,6 +59,13 @@ $(function() {
 			}
 		}
 
+		if (data.pending) {
+			pending = data.pending;
+			for (var i = 0; i < pending.length; i++) {
+				$('.friendListUl').append(pendingFriendListItem(pending));
+			}
+		}
+
 		for (var i = 0; i < chattingWith.length; i++) {
 			createChatWindow(chattingWith[i], socket, chattingWith, onlineFriends, friends);
 		}
@@ -397,7 +404,7 @@ function friendListItem(friend, online) {
 	if (typeof(friend) == 'string') { // it's a group ID
 		return (
 		  '<li class="friendLi clickable" id="friendLi-' + friend + '">' + 
-		  'placeholder' + '</li>'
+		  getFirstNames(friend) + '</li>'
 		);
 	}
 	var onlineClass = online ? ' onlineFriendLi' : '';
@@ -410,8 +417,8 @@ function friendListItem(friend, online) {
 
 function pendingFriendListItem(friend) {
 	return (
-	  '<li class="pendingFriendLi friendLi" id="pendingFriendLi-' + friend.username + '">' + 
-	  friend.firstName + ' ' + friend.lastName + ' (pending) </li>'
+	  '<li class="pendingFriendLi friendLi" id="pendingFriendLi-' + friend + '">' + 
+	  friend + ' (pending) </li>'
 	);
 }
 
@@ -419,7 +426,8 @@ function pendingFriendListItem(friend) {
 function chatWindow(friend, friends) {
 	var name = getName(friend);
 	var code = '<div class="chatWindow" id="chatWindow-' + friend + '">' +
-    '<div class="chatHeader" id="chatHeader-' + friend + '">' + name +
+    '<div class="chatHeader" id="chatHeader-' + friend + '">' +
+    '<div class="chatHeaderNameWrapper"><span class="chatHeaderName">' + name + '</span></div>' +
     closeChatWindowButton(friend) +
     '<div class="toggleAddButton darkClickable" id="toggleAddButton-' + friend + '">+</div></div>' +
     '<div class="chatAddToGroup" id="chatAddToGroup-' + friend + '">' +
@@ -562,9 +570,17 @@ function getFirstName(friends, username) {
 	return f.firstName;
 }
 
-function getName(username) {
-	var f = friends.filter(function(obj) { return obj.username == username })[0];
-	if (f == null) return 'placeholder';
+function getFirstNames(group) {
+	var names = getFirstName(friends, groups[group][0])
+	for (var i = 1; i < groups[group].length; i++) {
+		names += ', ' + getFirstName(friends, groups[group][i]);
+	}
+	return names;
+}
+
+function getName(id) {
+	var f = friends.filter(function(obj) { return obj.username == id })[0];
+	if (f == null) return getFirstNames(id);
 	return (f.firstName + ' ' + f.lastName);
 }
 
@@ -886,11 +902,11 @@ function initFriendRequests() {
 
 function friendRequestsListItem(data) {
 	return (
-	  '<li class="friendRequestsListItem" id="friendRequestsListItem-' + data.username + '">' +
+	  '<div class="friendRequestsListItem" id="friendRequestsListItem-' + data.username + '">' +
 	  '<div class="friendRequestsListItemName">' + data.firstName + ' ' + data.lastName + '</div>' +
 	  '<div class="friendRequestAccept clickable" id="friendRequestAccept-' + data.username + '">Y</div>' +
 	  '<div class="friendRequestDecline clickable" id="friendRequestDecline-' + data.username + '">N</div>' +
-	  '</li>'
+	  '</div>'
 	);
 }
 
@@ -924,7 +940,7 @@ function refreshFriendRequestsDiv() {
 function addFriend(friend, socket) {
 	if (pending.indexOf(friend.username) == -1) {
 		pending.push(friend.username);
-		$('.friendListUl').append(pendingFriendListItem(friend));
+		$('.friendListUl').append(pendingFriendListItem(friend.username));
 		socket.emit('sendFriendRequest', { friend : friend.username });
 		$('#searchResult').html('');
 		$('#searchBar').val('');

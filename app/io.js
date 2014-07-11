@@ -226,6 +226,7 @@ function chatInit(socket) {
     var friendsArray = socket.request.user.friends;
     var onlineFriends = [];
     var friends = [];
+    var pending = socket.request.user.pending;
     if (friendsArray.length) {
       for (var i = 0; i < friendsArray.length; i++) {
         User.findOne({ username : friendsArray[i] }, function(err, friendData) {
@@ -241,19 +242,19 @@ function chatInit(socket) {
 
           friends.push(friend);
           if (friends.length == friendsArray.length) {
-            initMembersAndGroups(socket, friendsArray, onlineFriends, friends);
+            initMembersAndGroups(socket, friendsArray, onlineFriends, friends, pending);
           }
         });
       }
     } else {
       console.log('no friends found');
-      initMembersAndGroups(socket, friendsArray, onlineFriends, friends);
+      initMembersAndGroups(socket, friendsArray, onlineFriends, friends, pending);
     }
   }
 
 }
 
-function initMembersAndGroups(socket, friendsArray, onlineFriends, friends) {
+function initMembersAndGroups(socket, friendsArray, onlineFriends, friends, pending) {
   var groups = {};
   var friendRequests = [];
 
@@ -267,7 +268,8 @@ function initMembersAndGroups(socket, friendsArray, onlineFriends, friends) {
         chattingWith : socket.request.user.openChats,
         groups : groups,
         friendRequests : friendRequests,
-        friendsArr : friendsArray
+        friendsArr : friendsArray,
+        pending : pending
       });
     }); // end getFriendRequests
   }); // end getMembersOfGroups
