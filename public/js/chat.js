@@ -4,6 +4,7 @@ $(function() {
 	friendsArr = []; // [ username, ... ]
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
+	//friendRequests = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	sentMsgs = {};
 	groups = {}; // { groupName : [friend1, friend2], .. }
 
@@ -43,9 +44,7 @@ $(function() {
 				}
 				bindFriendListItem(friends[i].username);
 			}
-
-
-		}
+		} // end if (data.friends)
 		
 		if (data.groups) {
 			for (var group in groups) {
@@ -57,13 +56,20 @@ $(function() {
 				}
 			}
 		}
-
+/*
+		if (data.friendRequests) {
+			if (data.friendRequests.length) {
+				friendRequests = data.friendRequests;
+				initFriendRequests();
+			}
+		}
+*/
 		for (var i = 0; i < chattingWith.length; i++) {
 			createChatWindow(chattingWith[i], socket, chattingWith, onlineFriends, friends);
 		}
 		refreshChatHidden();
 
-	});
+	}); // end socket.on('initFriends')
 
 	socket.on('receiveMessage', function(data) {
 		console.log('received a message');
@@ -868,5 +874,56 @@ function receiveFriendRequest(friend) {
 	$('.friendListUl').append(li);
 }
 
+
+// ===================== FRIEND REQUESTS ==============================
+
+function initFriendRequests() {
+	for (var i = 0; i < friendRequests.length; i++) {
+		$('.friendRequestsList').append(friendRequestsListItem(friendRequests[i]));
+		bindFriendRequestItem(friendRequests[i]);
+	}
+	refreshFriendRequestsDiv();
+}
+
+function friendRequestsListItem(data) {
+	return (
+	  '<li class="friendRequestsListItem" id="friendRequestsListItem-' + data.username + '">' +
+	  '<div class="friendRequestsListItemName">' + data.firstName + ' ' + data.lastName + '</div>' +
+	  '<div class="friendRequestAccept clickable" id="friendRequestAccept-' + data.username + '">Y</div>' +
+	  '<div class="friendRequestDecline clickable" id="friendRequestDecline-' + data.username + '">N</div>' +
+	  '</li>'
+	);
+}
+
+function bindFriendRequestItem(data) {
+	bindAcceptOrDeclineFriendRequest('accept', data);
+	bindAcceptOrDeclineFriendRequest('decline', data);
+}
+
+function bindAcceptOrDeclineFriendRequest(val, data) {
+	var id = data.username;
+	$('#friendRequest' + capitalizeFirstLetter(val) + '-' + id).click(function() {
+		socket.emit(val + 'FriendRequest', { from : id });
+		$('#friendRequestsListItem-' + id).remove();
+
+		// remove from the friendRequests array
+		friendRequests.splice(friendRequests.indexOf(data), 1);
+
+		refreshFriendRequestsDiv();
+	});
+}
+
+function refreshFriendRequestsDiv() {
+	if (friendRequests.length) {
+		$('.friendRequests').css('display', 'block');
+	} else {
+		$('.friendRequests').css('display', 'none');
+	}
+	resizeChatContentWrapper();
+}
+
+function capitalizeFirstLetter(string){
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 

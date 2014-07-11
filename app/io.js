@@ -173,6 +173,30 @@ module.exports = function(io) {
       }
     }); // end socket.on('makeGroup')
 
+    socket.on('acceptFriendRequest', function(data) {
+      if (data.from) {
+        User.findOne({ username : data.from }, function(err, user) {
+          if (user != null && user.pending.indexOf(socket.request.user.username) != -1) {
+            user.pending.splice(user.pending.indexOf(socket.request.user.username), 1);
+            user.save();
+            addFriend(user, socket.request.user);
+            addFriend(socket.request.user, user);
+          }
+        }); // end User.findOne
+      }
+    }) // end socket.on('acceptFriendRequest')
+
+    socket.on('declineFriendRequest', function(data) {
+      if (data.from) {
+        User.findOne({ username : data.from }, function(err, user) {
+          if (user != null && user.pending.indexOf(socket.request.user.username) != -1) {
+            user.pending.splice(user.pending.indexOf(socket.request.user.username), 1);
+            user.save();
+          }
+        }); // end User.findOne
+      }
+    }); // end socket.on('declineFriendRequest')
+
 	}); // end socket.on('connection')
 }
 
@@ -316,3 +340,18 @@ function makeAndEmitGroup(members, socket) {
     }); // end socket.emit('madeGroup')
   }); // end group.save
 }
+
+function addFriend(user, friend) {
+  // users are of User model
+  user.friends.push(friend.username);
+  user.save();
+
+  for (var i = 0; i < user.sockets.length; i++) {
+    io.to(user.sockets[i]).emit('addFriend', {
+      username : friend.username,
+      firstName : friend.firstName,
+      lastName : friend.lastName
+    });
+  }
+}
+
