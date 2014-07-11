@@ -241,17 +241,21 @@ function chatInit(socket) {
         friends.push(friend);
         if (friends.length == friendsArray.length) {
           var groups = {};
+          var friendRequests = [];
 
           getMembersOfGroups(socket, groups, socket.request.user.groups, function() {
-            console.log('emitting initFriends');
+            getFriendRequests(socket, friendRequests, socket.request.user.username, function() {
+              console.log('emitting initFriends');
 
-            socket.emit('initFriends', {
-              friends : friends,
-              onlineFriends : onlineFriends,
-              chattingWith : socket.request.user.openChats,
-              groups : groups
-            });
-          });
+              socket.emit('initFriends', {
+                friends : friends,
+                onlineFriends : onlineFriends,
+                chattingWith : socket.request.user.openChats,
+                groups : groups,
+                friendRequests : friendRequests
+              });
+            }); // end getFriendRequests
+          }); // end getMembersOfGroups
         }
       });
     }
@@ -296,6 +300,15 @@ function getMembersOfGroups(socket, groups, groupIDs, callback) {
       }
     });
   }
+}
+
+function getFriendRequests(socket, friendRequests, username, callback) {
+  User.find({ pending : username }, function(err, users) {
+    for (var i = 0; i < users.length; i++) {
+      friendRequests.push(userNames(users[i]));
+    }
+    callback();
+  }); // end User.find
 }
 
 function userNames(user) {

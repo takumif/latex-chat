@@ -4,7 +4,7 @@ $(function() {
 	friendsArr = []; // [ username, ... ]
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
-	//friendRequests = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
+	friendRequests = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	sentMsgs = {};
 	groups = {}; // { groupName : [friend1, friend2], .. }
 
@@ -56,14 +56,14 @@ $(function() {
 				}
 			}
 		}
-/*
+
 		if (data.friendRequests) {
 			if (data.friendRequests.length) {
 				friendRequests = data.friendRequests;
 				initFriendRequests();
 			}
 		}
-*/
+
 		for (var i = 0; i < chattingWith.length; i++) {
 			createChatWindow(chattingWith[i], socket, chattingWith, onlineFriends, friends);
 		}
