@@ -199,7 +199,7 @@ function bindFriendListItem(friend) {
 function addToFriendListDiv(friend) {
 	if (onlineFriends.indexOf(friend.username) > -1) {
 		$('.friendListUl').prepend(friendListItem(friend, true));
-	}else {
+	} else {
 		$('.friendListUl').append(friendListItem(friend, false));
 	}
 	bindFriendListItem(friend.username);
@@ -407,14 +407,14 @@ function friendListItem(friend, online) {
 	);
 }
 
-/*
+
 function pendingFriendListItem(friend) {
 	return (
-	  '<li class="pendingFriendLi" id="friendLi-' + friend.username + '">' + 
+	  '<li class="pendingFriendLi friendLi" id="pendingFriendLi-' + friend.username + '">' + 
 	  friend.firstName + ' ' + friend.lastName + ' (pending) </li>'
 	);
 }
-*/
+
 
 function chatWindow(friend, friends) {
 	var name = getName(friend);
@@ -924,16 +924,18 @@ function refreshFriendRequestsDiv() {
 function addFriend(friend, socket) {
 	if (pending.indexOf(friend.username) == -1) {
 		pending.push(friend.username);
-		var li = friendListItem(friend, false);
-		li = li.replace('class="', 'class="pendingFriendLi ');
-		$('.friendListUl').append(li);
+		$('.friendListUl').append(pendingFriendListItem(friend));
 		socket.emit('sendFriendRequest', { friend : friend.username });
+		$('#searchResult').html('');
+		$('#searchBar').val('');
 	}
 }
 
 function receiveFriendRequest(friend) {
 	// friend : {username, fn, ln}
 	$('.friendRequestsList').append(friendRequestsListItem(friend));
+	bindFriendRequestItem(friend);
+	friendRequests.push(friend);
 	refreshFriendRequestsDiv();
 }
 

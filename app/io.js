@@ -129,19 +129,20 @@ module.exports = function(io) {
     });
 
     socket.on('sendFriendRequest', function(data) {
-      var user = socket.request.user;
-      if (user.friends.indexOf(data.friend == -1) &&
-          user.pending.indexOf(data.friend == -1)) {
-        User.findOne({ username : data.friend }, function(err, friend) {
-          if (friend) {
-            user.pending.push(friend.username);
-            user.save();
-            for (var i = 0; i < friend.sockets.length; i++) {
-              io.to(friend.sockets[i]).emit('receiveFriendRequest', { friend : userNames(user) });
+      User.findOne({ username : socket.request.user.username }, function(err, user) {
+        if (user.friends.indexOf(data.friend == -1) &&
+            user.pending.indexOf(data.friend == -1)) {
+          User.findOne({ username : data.friend }, function(err, friend) {
+            if (friend) {
+              user.pending.push(friend.username);
+              user.save();
+              for (var i = 0; i < friend.sockets.length; i++) {
+                io.to(friend.sockets[i]).emit('receiveFriendRequest', { friend : userNames(user) });
+              }
             }
-          }
-        });
-      }
+          });
+        }
+      }); // end User.findOne
     });
 
     socket.on('saveOpenChats', function(data) {
@@ -173,12 +174,13 @@ module.exports = function(io) {
 
     socket.on('acceptFriendRequest', function(data) {
       if (data.from) {
-        User.findOne({ username : data.from }, function(err, user) {
-          if (user != null && user.pending.indexOf(socket.request.user.username) != -1) {
-            user.pending.splice(user.pending.indexOf(socket.request.user.username), 1);
-            user.save();
-            addFriend(user, socket.request.user);
-            addFriend(socket.request.user, user);
+        User.findOne({ username : data.from }, function(err, friend) {
+          if (friend != null && friend.pending.indexOf(socket.request.user.username) != -1) {
+            friend.pending.splice(friend.pending.indexOf(socket.request.user.username), 1);
+            User.findOne({ username : socket.request.user.username }, function(err, user) {
+              addFriend(io, friend, user);
+              addFriend(io, user, friend);
+            });
           }
         }); // end User.findOne
       }
@@ -293,20 +295,24 @@ function registerMemberToGroup(group, member) {
 }
 
 function getMembersOfGroups(socket, groups, groupIDs, callback) {
-  for (var i = 0; i < groupIDs.length; i++) {
-    var id = groupIDs[i];
-    Group.findOne({ idString : id }, function(err, group) {
-      if (group == null) {
-        console.log('group not found');
-      }
-      groups[group.idString] = group.members;
-      groups[group.idString].splice(groups[group.idString].indexOf(socket.request.user.username), 1); // get rid of user from the array
+  if (groupIDs.length) {
+    for (var i = 0; i < groupIDs.length; i++) {
+      var id = groupIDs[i];
+      Group.findOne({ idString : id }, function(err, group) {
+        if (group == null) {
+          console.log('group not found');
+        }
+        groups[group.idString] = group.members;
+        groups[group.idString].splice(groups[group.idString].indexOf(socket.request.user.username), 1); // get rid of user from the array
 
-      console.log('done dealing with elem ' + group.idString);
-      if (Object.getOwnPropertyNames(groups).length == groupIDs.length) { // done adding all the groups to the groups assoc array
-        callback();
-      }
-    });
+        console.log('done dealing with elem ' + group.idString);
+        if (Object.getOwnPropertyNames(groups).length == groupIDs.length) { // done adding all the groups to the groups assoc array
+          callback();
+        }
+      });
+    }
+  } else {
+    callback();
   }
 }
 
@@ -362,11 +368,11 @@ function makeAndEmitGroup(members, socket) {
   }); // end group.save
 }
 
-function addFriend(user, friend) {
+function addFriend(io, user, friend) {
   // users are of User model
   user.friends.push(friend.username);
   user.save();
-  var online = friend.sockets.length ? false : true;
+  var online = friend.sockets.length ? true : false;
 
   for (var i = 0; i < user.sockets.length; i++) {
     io.to(user.sockets[i]).emit('addFriend', {
