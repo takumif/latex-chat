@@ -115,6 +115,18 @@ $(function() {
 			addToSentMsgs(data.id);
 		}
 	});
+
+	socket.on('foundGroup', function(data) { // formed a group that already exists
+		groups[data.id] = data.members;
+		if (chattingWith.indexOf(data.id) > -1) {
+			openChatWindow(data.id); // bring the window into the view
+		} else { // chat window not open, so open it
+			openNewChatWindow(data.id, socket, chattingWith, onlineFriends, friends);
+		}
+		highlightChatWindow(data.id);
+		formatElem($('#chatContent-' + data.id));
+	}); // end socket.on('foundGroup')
+
 });
 
 $.fn.extend({
@@ -135,7 +147,9 @@ function documentInit() {
 			if (evt.target == $('.minimizedToggle')[0]) {
 				toggleMinimizedList();
 			} else {
-				hideMinimizedList();
+				if (!$(evt.target).hasClass('closeChatWindow')) {
+					hideMinimizedList();
+				}
 			}
 		}
 	});
@@ -359,8 +373,7 @@ function closeChatWindow(chattingWith, friend) {
 
 function friendListItem(friend, online) {
 	// friend = { username: '', firstName: '', lastName: ''}
-	console.log(typeof(friend));
-	if (typeof(friend) == 'string') {
+	if (typeof(friend) == 'string') { // it's a group ID
 		return (
 		  '<li class="friendLi clickable" id="friendLi-' + friend + '">' + 
 		  'placeholder' + '</li>'
@@ -372,6 +385,15 @@ function friendListItem(friend, online) {
 	  friend.firstName + ' ' + friend.lastName + '</li>'
 	);
 }
+
+/*
+function pendingFriendListItem(friend) {
+	return (
+	  '<li class="pendingFriendLi" id="friendLi-' + friend.username + '">' + 
+	  friend.firstName + ' ' + friend.lastName + ' (pending) </li>'
+	);
+}
+*/
 
 function chatWindow(friend, friends) {
 	var name = getName(friend);
@@ -490,12 +512,8 @@ function chatMessage(from, time, content, friends) {
 }
 
 function chatMessageWithoutName(time, content, friends) {
-	if (typeof(time) == 'string') {
-		time = new Date(time);
-	}
 	return (
 	  '<div class="chatMessage noName">' +
-	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
 	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 	  '</div>'
 	 );

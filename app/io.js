@@ -167,16 +167,7 @@ module.exports = function(io) {
         User.findOne({ username : data.members[i] }, function(err, friend) {
           members.push(friend.username);
           if (members.length == data.members.length + 1) { // callback at the end of the forloop
-            var group = new Group();
-            group.idString = String(group.id);
-            group.members = members;
-            group.save(function() {
-              console.log('made group: ' + group.idString);
-              socket.emit('madeGroup', {
-                id : group.idString,
-                members : members
-              }); // end socket.emit('madeGroup')
-            }); // end group.save
+            getOrMakeGroup(members, socket);
           }
         }); // end User.findOne
       }
@@ -291,3 +282,37 @@ function userNames(user) {
   };
 }
 
+function getOrMakeGroup(members, socket) {
+  var group = findGroupByMembers(members, function(group) {
+    if (group) { // such group already exists
+      console.log('found a matching group: ' + group.idString);
+      socket.emit('foundGroup', {
+        id : group.idString,
+        members : members
+      }); // end socket.emit('foundGroup')
+    } else {
+      makeAndEmitGroup(members, socket);
+    }
+  }); // end function(group)
+}
+
+function findGroupByMembers(members, callback) {
+  var conditions = [ { members : { $all : members }}, { members : { $size : members.length }} ];
+
+  Group.find().and(conditions).findOne({}, function(err, group) {
+    callback(group);
+  });
+}
+
+function makeAndEmitGroup(members, socket) {
+  group = new Group();
+  group.idString = String(group.id);
+  group.members = members;
+  group.save(function() {
+    console.log('made group: ' + group.idString);
+    socket.emit('madeGroup', {
+      id : group.idString,
+      members : members
+    }); // end socket.emit('madeGroup')
+  }); // end group.save
+}
