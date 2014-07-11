@@ -4,7 +4,8 @@
 // get all the tools we need
 var express  = require('express');
 var app      = express();
-var port     = process.env.PORT || 8080;
+var ip       = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+var port     = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
@@ -42,7 +43,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 require('./app/routes')(app, passport); // load our routes and pass in our app and fully configured passport
 
 // launch ======================================================================
-var io = require('socket.io').listen(app.listen(port));
+var io = require('socket.io').listen(app.listen(port, ip));
 
 // config socket.io
 require('./config/passportSocketIo')(io, cookieParser, mongoStore, sessionSecret);
