@@ -18,9 +18,9 @@ $(function() {
 		}
 		if (data.friends) {
 			friends = data.friends;
-			for (var i = 0; i < friends.length; i++) {
-				friendsArr.push(friends[i].username);
-			}
+		}
+		if (data.friendsArr) {
+			friendsArr = data.friendsArr;
 		}
 		if (data.chattingWith) {
 			chattingWith = data.chattingWith;
@@ -37,12 +37,7 @@ $(function() {
 			}
 			
 			for (var i = 0; i < friends.length; i++) {
-				if (onlineFriends.indexOf(friends[i].username) > -1) {
-					$('.friendListUl').prepend(friendListItem(friends[i], true));
-				}else {
-					$('.friendListUl').append(friendListItem(friends[i], false));
-				}
-				bindFriendListItem(friends[i].username);
+				addToFriendListDiv(friends[i]);
 			}
 		} // end if (data.friends)
 		
@@ -91,7 +86,6 @@ $(function() {
 				if (displayUsername(data, i)) {
 					chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 				} else {
-					console.log('shouldn"t display Username')
 					chatContent.prepend(chatMessageWithoutName(data.messages[i].time, data.messages[i].content, friends));
 				}
 			}
@@ -133,6 +127,19 @@ $(function() {
 		formatElem($('#chatContent-' + data.id));
 	}); // end socket.on('foundGroup')
 
+	socket.on('addFriend', function(data) {
+		if (data.online) onlineFriends.push(data.friend.username);
+		addToFriendListDiv(data.friend);
+		friendsArr.push(data.friend.username);
+		friends.push(data.friend);
+		if (pending.indexOf(data.friend.username) != -1) {
+			pending.splice(pending.indexOf(data.friend.username), 1);
+			$('#pendingFriendLi-' + data.friend.username).remove();
+		}
+		friendRequests.push(data.friend);
+		addToSentMsgs(data.friend.username);
+	}); // end socket.on('addFriend')
+
 });
 
 $.fn.extend({
@@ -167,7 +174,6 @@ function documentInit() {
 
 function displayUsername (data, index) {
 	if (index == data.messages.length - 1) return true;
-	console.log(data.messages[index].time);
 	var oldTime = new Date(data.messages[index + 1].time),
 		newTime = new Date(data.messages[index].time);
 	if ((newTime - oldTime) > 300000) {
@@ -188,6 +194,15 @@ function bindFriendListItem(friend) {
 			openChatWindow(friend);
 		}
 	});
+}
+
+function addToFriendListDiv(friend) {
+	if (onlineFriends.indexOf(friend.username) > -1) {
+		$('.friendListUl').prepend(friendListItem(friend, true));
+	}else {
+		$('.friendListUl').append(friendListItem(friend, false));
+	}
+	bindFriendListItem(friend.username);
 }
 
 function makeFriendOffline(friend, onlineFriends, chattingWith) {
@@ -858,22 +873,6 @@ function doneTypingSearch(socket) {
 	}
 }
 
-function addFriend(friend, socket) {
-	if (pending.indexOf(friend.username) == -1) {
-		pending.push(friend.username);
-		var li = friendListItem(friend, false);
-		li = li.replace('class="', 'class="pendingFriendLi ');
-		$('.friendListUl').append(li);
-		socket.emit('sendFriendRequest', { friend : friend.username });
-	}
-}
-
-function receiveFriendRequest(friend) {
-	var li = friendListItem(friend, false);
-	li = li.replace('class="', 'class="pendingRequestFriendLi ');
-	$('.friendListUl').append(li);
-}
-
 
 // ===================== FRIEND REQUESTS ==============================
 
@@ -920,6 +919,22 @@ function refreshFriendRequestsDiv() {
 		$('.friendRequests').css('display', 'none');
 	}
 	resizeChatContentWrapper();
+}
+
+function addFriend(friend, socket) {
+	if (pending.indexOf(friend.username) == -1) {
+		pending.push(friend.username);
+		var li = friendListItem(friend, false);
+		li = li.replace('class="', 'class="pendingFriendLi ');
+		$('.friendListUl').append(li);
+		socket.emit('sendFriendRequest', { friend : friend.username });
+	}
+}
+
+function receiveFriendRequest(friend) {
+	// friend : {username, fn, ln}
+	$('.friendRequestsList').append(friendRequestsListItem(friend));
+	refreshFriendRequestsDiv();
 }
 
 function capitalizeFirstLetter(string){

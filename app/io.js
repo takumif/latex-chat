@@ -135,9 +135,7 @@ module.exports = function(io) {
         User.findOne({ username : data.friend }, function(err, friend) {
           if (friend) {
             user.pending.push(friend.username);
-            User.findOneAndUpdate({ username : user.username }, {pending : user.pending}, function() {
-              console.log('sending friend request');
-            });
+            user.save();
             for (var i = 0; i < friend.sockets.length; i++) {
               io.to(friend.sockets[i]).emit('receiveFriendRequest', { friend : userNames(user) });
             }
@@ -226,41 +224,51 @@ function chatInit(socket) {
     var friendsArray = socket.request.user.friends;
     var onlineFriends = [];
     var friends = [];
-    for (var i = 0; i < friendsArray.length; i++) {
-      User.findOne({ username : friendsArray[i] }, function(err, friendData) {
-        var friend = {};
-        friend.username = friendData.username;
-        friend.firstName = friendData.firstName;
-        friend.lastName = friendData.lastName;
+    if (friendsArray.length) {
+      for (var i = 0; i < friendsArray.length; i++) {
+        User.findOne({ username : friendsArray[i] }, function(err, friendData) {
+          var friend = {};
+          friend.username = friendData.username;
+          friend.firstName = friendData.firstName;
+          friend.lastName = friendData.lastName;
 
-        // if online, add to the list of online friends
-        if (friendData.sockets.length > 0) {
-          onlineFriends.push(friendData.username);
-        }
+          // if online, add to the list of online friends
+          if (friendData.sockets.length > 0) {
+            onlineFriends.push(friendData.username);
+          }
 
-        friends.push(friend);
-        if (friends.length == friendsArray.length) {
-          var groups = {};
-          var friendRequests = [];
-
-          getMembersOfGroups(socket, groups, socket.request.user.groups, function() {
-            getFriendRequests(socket, friendRequests, socket.request.user.username, function() {
-              console.log('emitting initFriends');
-
-              socket.emit('initFriends', {
-                friends : friends,
-                onlineFriends : onlineFriends,
-                chattingWith : socket.request.user.openChats,
-                groups : groups,
-                friendRequests : friendRequests
-              });
-            }); // end getFriendRequests
-          }); // end getMembersOfGroups
-        }
-      });
+          friends.push(friend);
+          if (friends.length == friendsArray.length) {
+            initMembersAndGroups(socket, friendsArray, onlineFriends, friends);
+          }
+        });
+      }
+    } else {
+      console.log('no friends found');
+      initMembersAndGroups(socket, friendsArray, onlineFriends, friends);
     }
   }
 
+}
+
+function initMembersAndGroups(socket, friendsArray, onlineFriends, friends) {
+  var groups = {};
+  var friendRequests = [];
+
+  getMembersOfGroups(socket, groups, socket.request.user.groups, function() {
+    getFriendRequests(socket, friendRequests, socket.request.user.username, function() {
+      console.log('emitting initFriends');
+
+      socket.emit('initFriends', {
+        friends : friends,
+        onlineFriends : onlineFriends,
+        chattingWith : socket.request.user.openChats,
+        groups : groups,
+        friendRequests : friendRequests,
+        friendsArr : friendsArray
+      });
+    }); // end getFriendRequests
+  }); // end getMembersOfGroups
 }
 
 function registerMembersToGroup(group, members) {
@@ -358,12 +366,12 @@ function addFriend(user, friend) {
   // users are of User model
   user.friends.push(friend.username);
   user.save();
+  var online = friend.sockets.length ? false : true;
 
   for (var i = 0; i < user.sockets.length; i++) {
     io.to(user.sockets[i]).emit('addFriend', {
-      username : friend.username,
-      firstName : friend.firstName,
-      lastName : friend.lastName
+      friend : userNames(friend),
+      online : online
     });
   }
 }
