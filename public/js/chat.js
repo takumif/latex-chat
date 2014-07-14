@@ -5,7 +5,7 @@ $(function() {
 	friends = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
 	pending = [];
 	friendRequests = []; // [ { username: '', firstName: '', lastName: ''}, ... ]
-	sentMsgs = {};
+	sentMsgs = {};		
 	groups = {}; // { groupName : [friend1, friend2], .. }
 	earliestMsgs = {}; // { username: date, ... }
 	initialized = false;
