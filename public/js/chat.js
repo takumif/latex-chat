@@ -8,6 +8,7 @@ $(function() {
 	sentMsgs = {};		
 	groups = {}; // { groupName : [friend1, friend2], .. }
 	earliestMsgs = {}; // { username: date, ... }
+	friendsInfo = {}; // { username: { lastMsgUser : username, lastMsgTime : time }, ... }
 	initialized = false;
 
 	socket = io.connect(document.URL);
@@ -81,7 +82,15 @@ $(function() {
 	socket.on('receiveMessage', function(data) {
 		console.log('received a message');
 		if (chattingWith.indexOf(data.chat) > -1) { // chat window already open
-			$('#chatContent-' + data.chat).append(chatMessage(data.from, data.time, data.content, friends));
+			if (friendsInfo[data.chat] && 
+			    friendsInfo[data.chat].lastMsgUser == data.from && 
+			    new Date(data.time) - new Date(friendsInfo[data.chat].lastMsgTime) < 300000) {
+				$('#chatContent-' + data.chat).append(chatMessageWithoutName(data.from, data.time, data.content, friends));
+			} else {
+				$('#chatContent-' + data.chat).append(chatMessage(data.from, data.time, data.content, friends));
+			}
+			friendsInfo[data.chat].lastMsgUser = data.from;
+			friendsInfo[data.chat].lastMsgTime = data.time;
 		} else { // chat window not open, so open it
 			openNewChatWindow(data.chat, socket, chattingWith, onlineFriends, friends);
 		}
@@ -391,12 +400,19 @@ function chatNextMsg(friend) {
 function prependMsgsToChat(data) { // data.from and data.messages
 	if (chattingWith.indexOf(data.from) > -1) {
 		var chatContent = $('#chatContent-' + data.from);
+
+		friendsInfo[data.from] = {};
+
 		for (var i = 0; i < data.messages.length; i++) {
 			
 			if (displayUsername(data, i)) {
 				chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 			} else {
 				chatContent.prepend(chatMessageWithoutName(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
+			}
+			if (i == data.messages.length - 1) {
+				friendsInfo[data.from].lastMsgUser = data.messages[i].from;
+				friendsInfo[data.from].lastMsgTime = data.messages[i].time;
 			}
 		}
 	}
@@ -415,7 +431,18 @@ function sendChatMessage(recipient, socket, friends) {
 		isGroupMsg : isGroupMsg
 	});
 	$('#chatInput-' + recipient).val(null);
-	$('#chatContent-' + recipient).append(chatMessage(user, time, content, friends));
+
+	if (friendsInfo[recipient] && 
+	    friendsInfo[recipient].lastMsgUser == user && 
+	    new Date(time) - new Date(friendsInfo[recipient].lastMsgTime) < 300000) {
+		$('#chatContent-' + recipient).append(chatMessageWithoutName(user, time, content, friends));
+	} else {
+		$('#chatContent-' + recipient).append(chatMessage(user, time, content, friends));
+	}
+	if (!friendsInfo[recipient]) friendsInfo[recipient] = {};
+	friendsInfo[recipient].lastMsgUser = user;
+	friendsInfo[recipient].lastMsgTime = time;
+	
 	formatElem($('#chatContent-' + recipient), true);
 
 	// add the input to the list of sent messages
