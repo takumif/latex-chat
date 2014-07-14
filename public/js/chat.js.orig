@@ -572,33 +572,52 @@ function chatMessage(from, time, content, friends) {
 		time = new Date(time);
 	}
 	var name = (from == user) ? userFirstName : getFirstName(friends, from);
-	var sender = (from == user) ? ' senderSelf' : '';
+	if (name == userFirstName) {
+		var html =  ('<div class="chatMessage yesName senderSelf">' + 
+	  				'<div class="chatMessageSender">' + name + '</div>');
+	} else {
+		var html = ('<div class="chatMessage yesName">' + 
+	  		   		'<div class="chatMessageSender">' + name + '</div>');
+	}
 	return (
-	  '<div class="chatMessage yesName' + sender + '" id="chatMessage-' + time.toISOString().replace(/:|./g, '-') + '">' + 
+<<<<<<< HEAD
+	  html + '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
+=======
+	  '<div class="chatMessage yesName" id="chatMessage-' + time.toISOString().replace(/:|./g, '-') + '">' + 
 	  '<div class="chatMessageSender">' + name + '</div>' +
 	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
+>>>>>>> ca5da66407fc4acbef0cb733ee489052332918e6
 	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 	  '</div>'
 	);
 }
 
 function chatMessageWithoutName(from, time, content, friends) {
-	if (typeof time == 'string') {
-		time = new Date(time);
-		}
+<<<<<<< HEAD
+	console.log(from, user)
 	if (from == user) {
 		return (
-		  '<div class="chatMessage noName senderSelf id="chatMessage-' + time.toISOString().replace(/:|./g, '-') + '">' +
+		  '<div class="chatMessage noName senderSelf">' +
 		  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 		  '</div>'
 	 	);
 	} else {
 		return (
-		  '<div class="chatMessage noName id="chatMessage-' + time.toISOString().replace(/:|./g, '-') + '">' +
+		  '<div class="chatMessage noName">' +
 		  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 		  '</div>'
 		 );
 	}
+=======
+	if (typeof time == 'string') {
+		time = new Date(time);
+	}
+	return (
+	  '<div class="chatMessage noName" id="chatMessage-' + time.toISOString().replace(/:|./g, '-') + '">' + 
+	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
+	  '</div>'
+	 );
+>>>>>>> ca5da66407fc4acbef0cb733ee489052332918e6
 }
 
 function escapeHtml(string) {

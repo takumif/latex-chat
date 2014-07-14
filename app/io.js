@@ -92,22 +92,39 @@ module.exports = function(io) {
       });
     });
 
-    // user has opened a chat window with data.friend, send 10 recent msgs
+    // user has opened a chat window with data.from, send 10 recent msgs
     socket.on('requireRecentMessages', function(data) {
       console.log('requireRecentMessages called. isGroupChat: ' + data.isGroupChat);
       var user = socket.request.user.username;
       var conditions = (data.isGroupChat ?
-        [{ to : data.friend }] :
-        [{ from : user, to : data.friend }, { from : data.friend, to : user }]
+        [{ to : data.from }] :
+        [{ from : user, to : data.from }, { from : data.from, to : user }]
       );
-      console.log(conditions);
       Message.find()
         .or(conditions)
         .sort('-time') // sort by time, descending
-        .limit(30)
+        .limit(20)
         .find(function(err, messages) {
         socket.emit('receiveRecentMessages', {
-          from : data.friend,
+          from : data.from,
+          messages : messages
+        })
+      });
+    });
+
+    socket.on('requirePreviousMessages', function(data){ 
+      var user = socket.request.user.username;
+      var conditions = (data.isGroupChat ?
+        [{ to : data.from }] :
+        [{ from : user, to : data.from }, { from : data.from, to : user }]
+      );
+      Message.find({ time : { $lt : new Date(data.before) }})
+        .or(conditions)
+        .sort('-time') // sort by time, descending
+        .limit(20)
+        .find(function(err, messages) {
+        socket.emit('receivePreviousMessages', {
+          from : data.from,
           messages : messages
         })
       });
@@ -117,7 +134,7 @@ module.exports = function(io) {
       var friends = socket.request.user.friends;
       var pending = socket.request.user.pending;
       User.findOne({ username : data.search }, function(err, user) {
-        var friend = (user != null && friends.indexOf(user.username) == -1 && pending.indexOf(user.username) == -1) ? {
+        var friend = (user != null && user.usrename != socket.request.user.username && friends.indexOf(user.username) == -1 && pending.indexOf(user.username) == -1) ? {
           username : user.username,
           firstName : user.firstName,
           lastName : user.lastName

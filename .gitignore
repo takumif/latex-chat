@@ -18,6 +18,6 @@ config/database.js
 config/secret.js
 
 public/lib
-public/js/mathjax
+public/js/socket.js
 
 .DS_Store
