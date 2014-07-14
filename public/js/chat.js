@@ -89,11 +89,10 @@ $(function() {
 		if (chattingWith.indexOf(data.from) > -1) {
 			var chatContent = $('#chatContent-' + data.from);
 			for (var i = 0; i < data.messages.length; i++) {
-				
 				if (displayUsername(data, i)) {
 					chatContent.prepend(chatMessage(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 				} else {
-					chatContent.prepend(chatMessageWithoutName(data.messages[i].time, data.messages[i].content, friends));
+					chatContent.prepend(chatMessageWithoutName(data.messages[i].from, data.messages[i].time, data.messages[i].content, friends));
 				}
 			}
 			formatElem($('#chatContent-' + data.from));
@@ -531,21 +530,35 @@ function chatMessage(from, time, content, friends) {
 		time = new Date(time);
 	}
 	var name = (from == user) ? userFirstName : getFirstName(friends, from);
+	if (name == userFirstName) {
+		var html =  ('<div class="chatMessage yesName senderSelf">' + 
+	  				'<div class="chatMessageSender">' + name + '</div>');
+	} else {
+		var html = ('<div class="chatMessage yesName">' + 
+	  		   		'<div class="chatMessageSender">' + name + '</div>');
+	}
 	return (
-	  '<div class="chatMessage yesName">' + 
-	  '<div class="chatMessageSender">' + name + '</div>' +
-	  '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
+	  html + '<div class="chatMessageTime">' + formatTime(time) + '</div>' +
 	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
 	  '</div>'
 	);
 }
 
-function chatMessageWithoutName(time, content, friends) {
-	return (
-	  '<div class="chatMessage noName">' +
-	  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
-	  '</div>'
-	 );
+function chatMessageWithoutName(from, time, content, friends) {
+	console.log(from, user)
+	if (from == user) {
+		return (
+		  '<div class="chatMessage noName senderSelf">' +
+		  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
+		  '</div>'
+	 	);
+	} else {
+		return (
+		  '<div class="chatMessage noName">' +
+		  '<div class="chatMessageContent">' + codify(Autolinker.link(escapeHtml(content))) + '</div>' +
+		  '</div>'
+		 );
+	}
 }
 
 function escapeHtml(string) {

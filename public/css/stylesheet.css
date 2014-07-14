@@ -335,17 +335,9 @@ body{
 	overflow-y: scroll;
 	overflow-x: hidden;
 
-	padding-left: 15px;	
-	padding-right: 15px;
-
 	color: black;
 
 	vertical-align: bottom;
-
-	/*To keep the padding within the box*/
-	box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	-mox-box-sizing: border-box;
 }
 
 .selectedChatWindow {
@@ -358,20 +350,31 @@ body{
 	}
 	
 	.chatMessage{
-		margin-bottom: 5px;
+
+		padding: 1px 15px 3px 15px;
+
+		/*To keep the padding within the box*/
+		box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		-mox-box-sizing: border-box;
 	}
 
 	.yesName {
-		margin-top: 15px;
+		padding-top: 3px;
 	}
 
 		.chatMessageSender {
 			margin-left: 0;
-			margin-bottom: 5px;
+			margin-bottom: 4px;
 
 			font: bold 14px Helvetica, sans-serif;
 			float: left;
 		}
+
+		.senderSelf {
+			background: #F9F9F9;
+		}
+
 
 		.chatMessageTime {
 			float: right;
@@ -381,7 +384,7 @@ body{
 		}
 
 		.chatMessageContent {
-			margin-top: 5px;
+			margin-top: 3px;
 			font-size: 13px;
 			clear: both;
 			white-space: pre-wrap;
