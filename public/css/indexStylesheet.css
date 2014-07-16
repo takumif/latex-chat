@@ -1,3 +1,4 @@
+
 html {
 	height: 100%;
 }
@@ -37,7 +38,7 @@ div + input[type='password'] {
 	margin-top: 4px;
 
 	float: left;
-	font: 25px Helvetica, sans-serif;
+	font: 25px Courier, sans-serif;
 	color: #787878;
 }
 
@@ -61,6 +62,9 @@ div + input[type='password'] {
 	font: 36px Helvetica, sans-serif;
 	text-align: center;
 }
+	.screenshot {
+		margin-top: 40px
+	}
 
 #lastInput {
 	margin-bottom: 3px;
