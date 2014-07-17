@@ -38,7 +38,7 @@ div + input[type='password'] {
 	margin-top: 4px;
 
 	float: left;
-	font: 25px Courier, sans-serif;
+	font: 25px Courier, monospace;
 	color: #787878;
 }
 
@@ -55,7 +55,7 @@ div + input[type='password'] {
 
 .hook {
 
-	width: 450px;
+	width: 500px;
 	vertical-align: middle;
 	float: left;
 
@@ -76,6 +76,11 @@ div + input[type='password'] {
 	margin-right: 135;
 	width: 300px;
 }
+
+.mono {
+	font-family: Courier, monospace;
+}
+
 /* ==============================================
    ================ LOGIN =======================
 */

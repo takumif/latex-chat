@@ -2,10 +2,33 @@
 <!doctype html>
 <html>
 <head>
-	<title>sushiOstrich</title>
+	<title>Verbose</title>
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
 	<link rel="stylesheet" href="/css/indexStylesheet.css">
+
+  <!-- configure MathJax -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js", "TeX/noUndefined.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$','$'] ],
+        displayMath: [ ['$$','$$'] ],
+        processEscapes: true,
+      },
+      showProcessingMessages: false,
+      messageStyle: "none",
+      "HTML-CSS": {
+        availableFonts: ["TeX"],
+        scale: 80
+      }
+    });
+  </script>
+
+  <!-- load MathJax -->
+  <script src="/lib/mathjax/MathJax.js"></script>
+
 </head>
 <body>
 <div class="topbar"><p id="title">Verbose<span class="sushi">.im</span></p></div>
@@ -49,7 +72,7 @@
 	</form>
 </div>
 </div>
-<div class="hook"> Welcome to Verbose<span class="sushi">.im</span> Chat with your friends in code and LaTeX! 
+<div class="hook"> Chat with your friends using <span class="mono">code</span> and $\LaTeX$. 
 <img class="screenshot" src="/img/screenshot.png" width="500" height="294"></div>
 </body>
 </html>
