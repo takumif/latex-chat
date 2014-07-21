@@ -8,212 +8,14 @@ module.exports = function(io) {
 
 	io.sockets.on('connection', function(socket) {
 
-    socketInit(io, socket);
-    chatInit(socket);
+    console.log('connection!');
+    if (!socket.request.user.logged_in) {
 
-    socket.on('disconnect', function() {
-      User.findOne({ username : socket.request.user.username }, function(err, user) {
-        user.sockets.splice(user.sockets.indexOf(socket.id), 1);
-        User.findOneAndUpdate({ username : user.username }, {sockets : user.sockets}, function() {
-          console.log('socket deleted from the list');
-        });
-        if (user.sockets.length == 0) { // the user is offline, so notify friends
-          console.log('user going offline, notifying friends');
-          for (var i = 0; i < user.friends.length; i++) {
-            User.findOne({ username : user.friends[i] }, function(err, friend) {
-              for (var j = 0; j < friend.sockets.length; j++) {
-                io.to(friend.sockets[j]).emit('userOffline', { user : user.username });
-              }
-            });
-          }
-        }
-      });
-      console.log('disconnect');
-    });
+    } else {
 
-    socket.on('talkTo', function(data) { // opened a chat window
-      socket.emit('message', {message:'now talking to' + data.talkTo});
-    });
-
-    socket.on('sendMessage', function(data) {
-      var newMessage = new Message();
-      newMessage.from = socket.request.user.username;
-      newMessage.to = data.recipient;
-      newMessage.content = data.content;
-      newMessage.time = data.time;
-      newMessage.save(function(err, msg, numAffected) {
-        if (data.isGroupMsg) {
-
-          Group.findOne({ idString : data.recipient }, function(err, group) {
-            // check if it's a new group
-            if (socket.request.user.groups.indexOf(data.recipient) == -1) {
-              // it is a new group
-              for (var i = 0; i < group.members.length; i++) {
-                registerMemberToGroup(group.idString, group.members[i]);
-              }
-            }
-
-            var recipients = [];
-            for (var i = 0; i < group.members.length; i++) {
-              User.findOne({ username : group.members[i] }, function(err, f) {
-                if (f != null) recipients.push(f);
-
-                if (recipients.length == group.members.length) {
-                  for (var r = 0; r < recipients.length; r++) {
-                    if (recipients[r].username != socket.request.user.username) {
-                      for (var s = 0; s < recipients[r].sockets.length; s++) {
-                        io.to(recipients[r].sockets[s]).emit('receiveMessage', {
-                          from : socket.request.user.username,
-                          time : data.time,
-                          content : data.content,
-                          chat : data.recipient
-                        });
-                      }
-                    }
-                  }
-                }
-              });
-            }
-          });
-        } else {
-          User.findOne({ username : data.recipient }, function(err, friend) {
-            if (friend != null) {
-              for (var i = 0; i < friend.sockets.length; i++) {
-                io.to(friend.sockets[i]).emit('receiveMessage', {
-                  from : socket.request.user.username,
-                  time : data.time,
-                  content : data.content,
-                  chat : socket.request.user.username
-                });
-              }
-            }
-          });
-        }
-      });
-    });
-
-    // user has opened a chat window with data.from, send 10 recent msgs
-    socket.on('requireRecentMessages', function(data) {
-      console.log('requireRecentMessages called. isGroupChat: ' + data.isGroupChat);
-      var user = socket.request.user.username;
-      var conditions = (data.isGroupChat ?
-        [{ to : data.from }] :
-        [{ from : user, to : data.from }, { from : data.from, to : user }]
-      );
-      Message.find()
-        .or(conditions)
-        .sort('-time') // sort by time, descending
-        .limit(20)
-        .find(function(err, messages) {
-        socket.emit('receiveRecentMessages', {
-          from : data.from,
-          messages : messages
-        })
-      });
-    });
-
-    socket.on('requirePreviousMessages', function(data){ 
-      var user = socket.request.user.username;
-      var conditions = (data.isGroupChat ?
-        [{ to : data.from }] :
-        [{ from : user, to : data.from }, { from : data.from, to : user }]
-      );
-      Message.find({ time : { $lt : new Date(data.before) }})
-        .or(conditions)
-        .sort('-time') // sort by time, descending
-        .limit(20)
-        .find(function(err, messages) {
-        socket.emit('receivePreviousMessages', {
-          from : data.from,
-          messages : messages
-        })
-      });
-    });
-
-    socket.on('searchInput', function(data) {
-      var friends = socket.request.user.friends;
-      var pending = socket.request.user.pending;
-      User.findOne({ username : data.search }, function(err, user) {
-        var friend = (user != null && user.usrename != socket.request.user.username && friends.indexOf(user.username) == -1 && pending.indexOf(user.username) == -1) ? {
-          username : user.username,
-          firstName : user.firstName,
-          lastName : user.lastName
-        } : null;
-        socket.emit('searchResult', {
-          friend : friend
-        });
-      });
-    });
-
-    socket.on('sendFriendRequest', function(data) {
-      User.findOne({ username : socket.request.user.username }, function(err, user) {
-        if (user.friends.indexOf(data.friend == -1) &&
-            user.pending.indexOf(data.friend == -1)) {
-          User.findOne({ username : data.friend }, function(err, friend) {
-            if (friend) {
-              user.pending.push(friend.username);
-              user.save();
-              for (var i = 0; i < friend.sockets.length; i++) {
-                io.to(friend.sockets[i]).emit('receiveFriendRequest', { friend : userNames(user) });
-              }
-            }
-          });
-        }
-      }); // end User.findOne
-    });
-
-    socket.on('saveOpenChats', function(data) {
-      console.log('saveOpenChats');
-      var openChats = [];
-      var user = socket.request.user;
-      for (var i = 0; i < data.openChats.length; i++) {
-        if (user.friends.indexOf(data.openChats[i]) != -1 || user.groups.indexOf(data.openChats[i]) != -1) {
-          openChats.push(data.openChats[i]);
-        }
-      }
-      User.findOneAndUpdate({ username : user.username }, { openChats : openChats }, function() {
-      });
-    });
-
-    socket.on('makeGroup', function(data) {
-      if (!data.members || typeof(data.members) != 'object') return false; // invalid socket emission
-
-      var members = [ socket.request.user.username ];
-      for (var i = 0; i < data.members.length; i++) {
-        User.findOne({ username : data.members[i] }, function(err, friend) {
-          members.push(friend.username);
-          if (members.length == data.members.length + 1) { // callback at the end of the forloop
-            getOrMakeGroup(members, socket);
-          }
-        }); // end User.findOne
-      }
-    }); // end socket.on('makeGroup')
-
-    socket.on('acceptFriendRequest', function(data) {
-      if (data.from) {
-        User.findOne({ username : data.from }, function(err, friend) {
-          if (friend != null && friend.pending.indexOf(socket.request.user.username) != -1) {
-            friend.pending.splice(friend.pending.indexOf(socket.request.user.username), 1);
-            User.findOne({ username : socket.request.user.username }, function(err, user) {
-              addFriend(io, friend, user);
-              addFriend(io, user, friend);
-            });
-          }
-        }); // end User.findOne
-      }
-    }) // end socket.on('acceptFriendRequest')
-
-    socket.on('declineFriendRequest', function(data) {
-      if (data.from) {
-        User.findOne({ username : data.from }, function(err, user) {
-          if (user != null && user.pending.indexOf(socket.request.user.username) != -1) {
-            user.pending.splice(user.pending.indexOf(socket.request.user.username), 1);
-            user.save();
-          }
-        }); // end User.findOne
-      }
-    }); // end socket.on('declineFriendRequest')
-
+      socketInit(io, socket);
+      chatInit(socket);
+    } // end if socket.request.user.logged_in
 	}); // end socket.on('connection')
 }
 
@@ -236,6 +38,209 @@ function socketInit(io, socket) {
       }
     }
   });
+
+  socket.on('disconnect', function() {
+    User.findOne({ username : socket.request.user.username }, function(err, user) {
+      user.sockets.splice(user.sockets.indexOf(socket.id), 1);
+      User.findOneAndUpdate({ username : user.username }, {sockets : user.sockets}, function() {
+        console.log('socket deleted from the list');
+      });
+      if (user.sockets.length == 0) { // the user is offline, so notify friends
+        console.log('user going offline, notifying friends');
+        for (var i = 0; i < user.friends.length; i++) {
+          User.findOne({ username : user.friends[i] }, function(err, friend) {
+            for (var j = 0; j < friend.sockets.length; j++) {
+              io.to(friend.sockets[j]).emit('userOffline', { user : user.username });
+            }
+          });
+        }
+      }
+    });
+    console.log('disconnect');
+  });
+
+  socket.on('talkTo', function(data) { // opened a chat window
+    socket.emit('message', {message:'now talking to' + data.talkTo});
+  });
+
+  socket.on('sendMessage', function(data) {
+    var newMessage = new Message();
+    newMessage.from = socket.request.user.username;
+    newMessage.to = data.recipient;
+    newMessage.content = data.content;
+    newMessage.time = data.time;
+    newMessage.save(function(err, msg, numAffected) {
+      if (data.isGroupMsg) {
+
+        Group.findOne({ idString : data.recipient }, function(err, group) {
+          // check if it's a new group
+          if (socket.request.user.groups.indexOf(data.recipient) == -1) {
+            // it is a new group
+            for (var i = 0; i < group.members.length; i++) {
+              registerMemberToGroup(group.idString, group.members[i]);
+            }
+          }
+
+          var recipients = [];
+          for (var i = 0; i < group.members.length; i++) {
+            User.findOne({ username : group.members[i] }, function(err, f) {
+              if (f != null) recipients.push(f);
+
+              if (recipients.length == group.members.length) {
+                for (var r = 0; r < recipients.length; r++) {
+                  if (recipients[r].username != socket.request.user.username) {
+                    for (var s = 0; s < recipients[r].sockets.length; s++) {
+                      io.to(recipients[r].sockets[s]).emit('receiveMessage', {
+                        from : socket.request.user.username,
+                        time : data.time,
+                        content : data.content,
+                        chat : data.recipient
+                      });
+                    }
+                  }
+                }
+              }
+            });
+          }
+        });
+      } else {
+        User.findOne({ username : data.recipient }, function(err, friend) {
+          if (friend != null) {
+            for (var i = 0; i < friend.sockets.length; i++) {
+              io.to(friend.sockets[i]).emit('receiveMessage', {
+                from : socket.request.user.username,
+                time : data.time,
+                content : data.content,
+                chat : socket.request.user.username
+              });
+            }
+          }
+        });
+      }
+    });
+  });
+
+  // user has opened a chat window with data.from, send 10 recent msgs
+  socket.on('requireRecentMessages', function(data) {
+    console.log('requireRecentMessages called. isGroupChat: ' + data.isGroupChat);
+    var user = socket.request.user.username;
+    var conditions = (data.isGroupChat ?
+      [{ to : data.from }] :
+      [{ from : user, to : data.from }, { from : data.from, to : user }]
+    );
+    Message.find()
+      .or(conditions)
+      .sort('-time') // sort by time, descending
+      .limit(20)
+      .find(function(err, messages) {
+      socket.emit('receiveRecentMessages', {
+        from : data.from,
+        messages : messages
+      })
+    });
+  });
+
+  socket.on('requirePreviousMessages', function(data){ 
+    var user = socket.request.user.username;
+    var conditions = (data.isGroupChat ?
+      [{ to : data.from }] :
+      [{ from : user, to : data.from }, { from : data.from, to : user }]
+    );
+    Message.find({ time : { $lt : new Date(data.before) }})
+      .or(conditions)
+      .sort('-time') // sort by time, descending
+      .limit(20)
+      .find(function(err, messages) {
+      socket.emit('receivePreviousMessages', {
+        from : data.from,
+        messages : messages
+      })
+    });
+  });
+
+  socket.on('searchInput', function(data) {
+    var friends = socket.request.user.friends;
+    var pending = socket.request.user.pending;
+    User.findOne({ username : data.search }, function(err, user) {
+      var friend = (user != null && user.usrename != socket.request.user.username && friends.indexOf(user.username) == -1 && pending.indexOf(user.username) == -1) ? {
+        username : user.username,
+        firstName : user.firstName,
+        lastName : user.lastName
+      } : null;
+      socket.emit('searchResult', {
+        friend : friend
+      });
+    });
+  });
+
+  socket.on('sendFriendRequest', function(data) {
+    User.findOne({ username : socket.request.user.username }, function(err, user) {
+      if (user.friends.indexOf(data.friend == -1) &&
+          user.pending.indexOf(data.friend == -1)) {
+        User.findOne({ username : data.friend }, function(err, friend) {
+          if (friend) {
+            user.pending.push(friend.username);
+            user.save();
+            for (var i = 0; i < friend.sockets.length; i++) {
+              io.to(friend.sockets[i]).emit('receiveFriendRequest', { friend : userNames(user) });
+            }
+          }
+        });
+      }
+    }); // end User.findOne
+  });
+
+  socket.on('saveOpenChats', function(data) {
+    console.log('saveOpenChats');
+    var openChats = [];
+    var user = socket.request.user;
+    for (var i = 0; i < data.openChats.length; i++) {
+      if (user.friends.indexOf(data.openChats[i]) != -1 || user.groups.indexOf(data.openChats[i]) != -1) {
+        openChats.push(data.openChats[i]);
+      }
+    }
+    User.findOneAndUpdate({ username : user.username }, { openChats : openChats }, function() {
+    });
+  });
+
+  socket.on('makeGroup', function(data) {
+    if (!data.members || typeof(data.members) != 'object') return false; // invalid socket emission
+
+    var members = [ socket.request.user.username ];
+    for (var i = 0; i < data.members.length; i++) {
+      User.findOne({ username : data.members[i] }, function(err, friend) {
+        members.push(friend.username);
+        if (members.length == data.members.length + 1) { // callback at the end of the forloop
+          getOrMakeGroup(members, socket);
+        }
+      }); // end User.findOne
+    }
+  }); // end socket.on('makeGroup')
+
+  socket.on('acceptFriendRequest', function(data) {
+    if (data.from) {
+      User.findOne({ username : data.from }, function(err, friend) {
+        if (friend != null && friend.pending.indexOf(socket.request.user.username) != -1) {
+          friend.pending.splice(friend.pending.indexOf(socket.request.user.username), 1);
+          User.findOne({ username : socket.request.user.username }, function(err, user) {
+            addFriend(io, friend, user);
+            addFriend(io, user, friend);
+          });
+        }
+      }); // end User.findOne
+    }
+  }) // end socket.on('acceptFriendRequest')
+
+  socket.on('declineFriendRequest', function(data) {
+    if (data.from) {
+      User.findOne({ username : data.from }, function(err, user) {
+        if (user != null && user.pending.indexOf(socket.request.user.username) != -1) {
+          user.pending.splice(user.pending.indexOf(socket.request.user.username), 1);
+          user.save();
+        }
+      }); // end User.findOne
+    }
+  }); // end socket.on('declineFriendRequest')
 }
 
 function chatInit(socket) {
