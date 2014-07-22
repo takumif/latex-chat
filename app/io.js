@@ -10,8 +10,13 @@ module.exports = function(io) {
 
     console.log('connection!');
     if (!socket.request.user.logged_in) {
-
+      // connection from Android without user specified
+      require('./ioAndroid')(io, socket, function() {
+        socketInit(io, socket);
+        chatInit(socket);
+      });
     } else {
+      // connection from browser, or from an Android device that has logged in previously
 
       socketInit(io, socket);
       chatInit(socket);
@@ -137,6 +142,7 @@ function socketInit(io, socket) {
         from : data.from,
         messages : messages
       })
+      console.log(messages);
     });
   });
 
