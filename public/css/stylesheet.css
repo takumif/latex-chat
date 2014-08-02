@@ -68,21 +68,25 @@ body{
 	box-shadow: 0px 1px #ccd0bd;
 }
 
+/*
 #setIcon {
 	margin: 6px 15px;
 
 	vertical-align: middle;
 }
+*/
 
  #logoutIcon {
- 	margin: 2px 40px 0 0;
+ 	margin: 8px 40px 0 0;
+ 	opacity: 0.5;
+ 	filter: alpha(opacity=50);
 
  	vertical-align: middle;
  }
 
 #userName {
 	position: absolute;
-	right: 170px;
+	right: 100px;
 
 	margin-top: 10px;
 	padding: 0 20px 0 0;
@@ -188,6 +192,8 @@ body{
 
 #searchAdd {
 	margin: 4px 10px 0 0;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
 
 	float: right;
 }
